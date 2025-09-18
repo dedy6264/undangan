@@ -20,54 +20,52 @@
             </div>
             <div class="card-body">
                 @if ($galleryImages->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Wedding Event</th>
-                                    <th>Image</th>
-                                    <th>Description</th>
-                                    <th>Sort Order</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($galleryImages as $galleryImage)
-                                    <tr>
-                                        <td>{{ $galleryImage->weddingEvent->event_name }} - {{ $galleryImage->weddingEvent->couple->groom_name }} & {{ $galleryImage->weddingEvent->couple->bride_name }}</td>
-                                        <td>
-                                            @if($galleryImage->thumbnail_url)
-                                                <img src="{{ $galleryImage->thumbnail_url }}" alt="Thumbnail" style="max-width: 100px; max-height: 100px;">
-                                            @elseif($galleryImage->image_url)
-                                                <img src="{{ $galleryImage->image_url }}" alt="Image" style="max-width: 100px; max-height: 100px;">
-                                            @else
+                    <div class="row">
+                        @foreach ($galleryImages as $galleryImage)
+                            <div class="col-md-3 mb-4">
+                                <div class="card h-100">
+                                    <div class="gallery-item" style="height: 200px; overflow: hidden;">
+                                        @if($galleryImage->image_url)
+                                            <img src="{{ asset($galleryImage->image_url) }}" alt="{{ $galleryImage->description ?? 'Gallery Image' }}" class="card-img-top" style="height: 100%; object-fit: cover; cursor: pointer;" onclick="openModal('{{ asset($galleryImage->image_url) }}')">
+                                        @else
+                                            <div class="d-flex align-items-center justify-content-center h-100 bg-light">
                                                 <span>No image</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ Str::limit($galleryImage->description, 50) }}</td>
-                                        <td>{{ $galleryImage->sort_order }}</td>
-                                        <td>
-                                            <a href="{{ route('gallery-images.show', $galleryImage) }}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('gallery-images.edit', $galleryImage) }}" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('gallery-images.destroy', $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        <div class="mt-3">
-                            {{ $galleryImages->links() }}
-                        </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ Str::limit($galleryImage->description ?? 'No description', 30) }}</h6>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                {{ $galleryImage->weddingEvent->event_name }}<br>
+                                                {{ $galleryImage->weddingEvent->couple->groom_name }} & {{ $galleryImage->weddingEvent->couple->bride_name }}
+                                            </small>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Sort: {{ $galleryImage->sort_order }}</small>
+                                            <div>
+                                                <a href="{{ route('gallery-images.show', $galleryImage) }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('gallery-images.edit', $galleryImage) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('gallery-images.destroy', $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-3">
+                        {{ $galleryImages->links() }}
                     </div>
                 @else
                     <p class="text-center">No gallery images found.</p>
@@ -76,18 +74,58 @@
         </div>
     </div>
 </div>
-@endsection
 
-@section('scripts')
-<!-- Page level plugins -->
-<script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-
-<!-- Page level custom scripts -->
-<script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+<!-- Modal for image gallery -->
+<div id="galleryModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Gallery Image" class="img-fluid">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('styles')
-<!-- Custom styles for this page -->
-<link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+<style>
+    .gallery-item {
+        position: relative;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .gallery-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .card-img-top {
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .modal-body {
+        padding: 0;
+    }
+    
+    #modalImage {
+        max-height: 80vh;
+        object-fit: contain;
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+    function openModal(src) {
+        document.getElementById('modalImage').src = src;
+        $('#galleryModal').modal('show');
+    }
+</script>
 @endsection

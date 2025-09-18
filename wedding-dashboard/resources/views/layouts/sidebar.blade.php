@@ -55,10 +55,12 @@
         </a>
         <div id="collapseWedding" class="collapse {{ request()->routeIs('couples.*') || request()->routeIs('people.*') || request()->routeIs('wedding-events.*') || request()->routeIs('locations.*') || request()->routeIs('gallery-images.*') || request()->routeIs('timeline-events.*') || request()->routeIs('bank-accounts.*') || request()->routeIs('guests.*') || request()->routeIs('invitations.*') || request()->routeIs('qr-codes.*') || request()->routeIs('guest-messages.*') ? 'show' : '' }}" aria-labelledby="headingWedding" data-parent="#accordionSidebar">
             <div class="py-2 bg-white rounded collapse-inner">
+                @if(auth()->user()->role=="admin")
                 <a class="collapse-item {{ request()->routeIs('couples.*') ? 'active' : '' }}" href="{{ route('couples.index') }}">Couples</a>
                 <a class="collapse-item {{ request()->routeIs('people.*') ? 'active' : '' }}" href="{{ route('people.index') }}">People</a>
                 <a class="collapse-item {{ request()->routeIs('wedding-events.*') ? 'active' : '' }}" href="{{ route('wedding-events.index') }}">Wedding Events</a>
                 <a class="collapse-item {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}">Locations</a>
+                @endif
                 <a class="collapse-item {{ request()->routeIs('gallery-images.*') ? 'active' : '' }}" href="{{ route('gallery-images.index') }}">Gallery Images</a>
                 <a class="collapse-item {{ request()->routeIs('timeline-events.*') ? 'active' : '' }}" href="{{ route('timeline-events.index') }}">Timeline Events</a>
                 <a class="collapse-item {{ request()->routeIs('bank-accounts.*') ? 'active' : '' }}" href="{{ route('bank-accounts.index') }}">Bank Accounts</a>
@@ -71,18 +73,23 @@
     </li>
 
     <!-- Nav Item - Business Management Collapse Menu -->
-    <li class="nav-item {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseBusiness"
-            aria-expanded="{{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') ? 'true' : 'false' }}" aria-controls="collapseBusiness">
+    <li class="nav-item {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') || request()->routeIs('create-order.*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') || request()->routeIs('create-order.*') ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseBusiness"
+            aria-expanded="{{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') || request()->routeIs('create-order.*') ? 'true' : 'false' }}" aria-controls="collapseBusiness">
             <i class="fas fa-fw fa-briefcase"></i>
             <span>Business Management</span>
         </a>
-        <div id="collapseBusiness" class="collapse {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') ? 'show' : '' }}" aria-labelledby="headingBusiness" data-parent="#accordionSidebar">
+        <div id="collapseBusiness" class="collapse {{ request()->routeIs('packages.*') || request()->routeIs('transactions.*') || request()->routeIs('payment-methods.*') || request()->routeIs('payment-transactions.*') || request()->routeIs('create-order.*') ? 'show' : '' }}" aria-labelledby="headingBusiness" data-parent="#accordionSidebar">
             <div class="py-2 bg-white rounded collapse-inner">
+                 @if(auth()->user()->role=="admin")
                 <a class="collapse-item {{ request()->routeIs('packages.*') ? 'active' : '' }}" href="{{ route('packages.index') }}">Packages</a>
+                @endif
+                <a class="collapse-item {{ request()->routeIs('create-order.*') ? 'active' : '' }}" href="{{ route('create-order.step1') }}">Create Order</a>
                 <a class="collapse-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}" href="{{ route('transactions.index') }}">Transactions</a>
+                 @if(auth()->user()->role=="admin")
                 <a class="collapse-item {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}" href="{{ route('payment-methods.index') }}">Payment Methods</a>
                 <a class="collapse-item {{ request()->routeIs('payment-transactions.*') ? 'active' : '' }}" href="{{ route('payment-transactions.index') }}">Payment Transactions</a>
+                @endif
             </div>
         </div>
     </li>

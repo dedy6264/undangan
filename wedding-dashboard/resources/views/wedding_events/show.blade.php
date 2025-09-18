@@ -39,7 +39,7 @@
                         </tr>
                         <tr>
                             <th>Event Date</th>
-                            <td>{{ $weddingEvent->event_date->format('d M Y') }}</td>
+                            <td>{{ $weddingEvent->event_date ? $weddingEvent->event_date->format('d M Y') : '-' }}</td>
                         </tr>
                         <tr>
                             <th>Event Time</th>

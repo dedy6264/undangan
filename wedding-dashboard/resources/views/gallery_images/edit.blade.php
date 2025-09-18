@@ -41,19 +41,21 @@
                     </div>
                     
                     <div class="form-group mb-3">
-                        <label for="image_url" class="form-label">Image URL <span class="text-danger">*</span></label>
-                        <input type="text" name="image_url" id="image_url" class="form-control" value="{{ old('image_url', $record->image_url) }}" required>
-                        @error('image_url')
+                        <label for="image" class="form-label">Image</label>
+                        <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                        <small class="form-text text-muted">Upload a new image (JPG, PNG, GIF) - Max 2MB</small>
+                        @error('image')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="thumbnail_url" class="form-label">Thumbnail URL</label>
-                        <input type="text" name="thumbnail_url" id="thumbnail_url" class="form-control" value="{{ old('thumbnail_url', $record->thumbnail_url) }}">
-                        @error('thumbnail_url')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        <div id="imagePreview" class="mt-2" style="display: none;">
+                            <img id="preview" src="#" alt="Preview" style="max-width: 200px; max-height: 200px;" class="img-thumbnail">
+                        </div>
+                        @if($record->image_url)
+                        <div class="mt-2">
+                            <label>Current Image:</label><br>
+                            <img src="{{ asset($record->image_url) }}" alt="Current Image" style="max-width: 200px; max-height: 200px;" class="img-thumbnail">
+                        </div>
+                        @endif
                     </div>
                     
                     <div class="form-group mb-3">
@@ -81,4 +83,20 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection

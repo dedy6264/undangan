@@ -16,7 +16,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">Person Details</h6>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ route('people.store') }}">
+                <form method="POST" action="{{ route('people.store') }}" enctype="multipart/form-data">
                     @csrf
                     
                     <div class="form-group mb-3">
@@ -55,12 +55,19 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="image_url">Image URL</label>
-                        <input type="text" name="image_url" id="image_url" class="form-control" value="{{ old('image_url') }}">
-                        @error('image_url')
+                        <label for="image">Photo</label>
+                        <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                        <small class="form-text text-muted">Upload a photo (JPG, PNG, GIF) - Max 2MB</small>
+                        @error('image')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+                        <div id="imagePreview" class="mt-2" style="display: none;">
+                            <img id="preview" src="#" alt="Preview" style="max-width: 200px; max-height: 200px;">
+                        </div>
                     </div>
+
+                    <!-- Hidden field for image_url (kept for backward compatibility) -->
+                    <input type="hidden" name="image_url" id="image_url" value="{{ old('image_url') }}">
 
                     <div class="form-group mb-3">
                         <label for="additional_info">Additional Info</label>
@@ -125,4 +132,20 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection

@@ -27,7 +27,7 @@
                             <option value="">Select Couple</option>
                             @forelse($couples as $couple)
                                 <option value="{{ $couple->id }}" {{ old('couple_id') == $couple->id ? 'selected' : '' }}>
-                                    {{ $couple->groom_name }} & {{ $couple->bride_name }} - {{ $couple->wedding_date->format('d M Y') }}
+                                    {{ $couple->groom_name }} & {{ $couple->bride_name }} - {{ $couple->wedding_date ? $couple->wedding_date->format('d M Y') : '' }}
                                 </option>
                             @empty
                                 <option value="" disabled>No couples available. Please <a href="{{ route('couples.create') }}">create a couple</a> first.</option>

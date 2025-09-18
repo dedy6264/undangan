@@ -40,19 +40,16 @@
                     </div>
                     
                     <div class="form-group mb-3">
-                        <label for="image_url" class="form-label">Image URL <span class="text-danger">*</span></label>
-                        <input type="text" name="image_url" id="image_url" class="form-control" value="{{ old('image_url') }}" required>
-                        @error('image_url')
+                        <label for="images" class="form-label">Images <span class="text-danger">*</span></label>
+                        <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*">
+                        <small class="form-text text-muted">Select one or more images (JPG, PNG, GIF) - Max 2MB each</small>
+                        @error('images')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="thumbnail_url" class="form-label">Thumbnail URL</label>
-                        <input type="text" name="thumbnail_url" id="thumbnail_url" class="form-control" value="{{ old('thumbnail_url') }}">
-                        @error('thumbnail_url')
+                        @error('images.*')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+                        <div id="imagePreview" class="mt-2"></div>
                     </div>
                     
                     <div class="form-group mb-3">
@@ -80,4 +77,31 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('images').addEventListener('change', function(e) {
+        const previewContainer = document.getElementById('imagePreview');
+        previewContainer.innerHTML = '';
+        
+        const files = e.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '200px';
+                    img.style.maxHeight = '200px';
+                    img.style.margin = '5px';
+                    img.classList.add('img-thumbnail');
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+</script>
 @endsection

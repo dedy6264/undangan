@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     TransactionController,
     PaymentMethodController,
     PaymentTransactionController,
-    ProfileController
+    ProfileController,
+    OrderController
 };
 
 Route::get('/', function () {
@@ -62,6 +63,23 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('transactions', TransactionController::class);
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('payment-transactions', PaymentTransactionController::class);
+    
+    // Order creation routes
+    Route::get('/create-order/step1', [OrderController::class, 'step1'])->name('create-order.step1');
+    Route::post('/create-order/step1', [OrderController::class, 'processStep1'])->name('create-order.process-step1');
+    Route::get('/create-order/step2', [OrderController::class, 'step2'])->name('create-order.step2');
+    Route::post('/create-order/step2', [OrderController::class, 'processStep2'])->name('create-order.process-step2');
+    Route::get('/create-order/step3', [OrderController::class, 'step3'])->name('create-order.step3');
+    Route::post('/create-order/step3', [OrderController::class, 'processStep3'])->name('create-order.process-step3');
+    Route::get('/create-order/step4', [OrderController::class, 'step4'])->name('create-order.step4');
+    Route::post('/create-order/step4', [OrderController::class, 'processStep4'])->name('create-order.process-step4');
+    Route::get('/create-order/step5', [OrderController::class, 'step5'])->name('create-order.step5');
+    Route::post('/create-order/step5', [OrderController::class, 'processStep5'])->name('create-order.process-step5');
+    Route::get('/create-order/step6', [OrderController::class, 'step6'])->name('create-order.step6');
+    Route::post('/create-order/step6', [OrderController::class, 'processStep6'])->name('create-order.process-step6');
+    Route::get('/create-order/step7', [OrderController::class, 'step7'])->name('create-order.step7');
+    Route::post('/create-order/step7', [OrderController::class, 'processStep7'])->name('create-order.process-step7');
+    Route::post('/create-order/cancel', [OrderController::class, 'cancel'])->name('create-order.cancel');
     
     // User management
     Route::resource('admin/users', AdminUserController::class)->names([

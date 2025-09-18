@@ -22,7 +22,17 @@ class WeddingEventController extends CrudController
      */
     public function index(): View
     {
-        $weddingEvents = WeddingEvent::with('couple')->latest()->paginate(10);
+        // Check if user is a client
+        if (auth()->user()->isClient()) {
+            // For clients, only show their own wedding events
+            $weddingEvents = WeddingEvent::whereHas('couple', function ($query) {
+                $query->where('client_id', auth()->id());
+            })->with('couple')->latest()->paginate(10);
+        } else {
+            // For admins, show all wedding events
+            $weddingEvents = WeddingEvent::with('couple')->latest()->paginate(10);
+        }
+        
         $title = 'Wedding Events';
         
         return view('wedding_events.index', [
@@ -77,7 +87,17 @@ class WeddingEventController extends CrudController
      */
     public function show($id): View
     {
-        $weddingEvent = WeddingEvent::with(['couple', 'location', 'galleryImages'])->findOrFail($id);
+        // Check if user is a client
+        if (auth()->user()->isClient()) {
+            // For clients, only allow viewing their own wedding events
+            $weddingEvent = WeddingEvent::whereHas('couple', function ($query) {
+                $query->where('client_id', auth()->id());
+            })->with(['couple', 'location', 'galleryImages'])->findOrFail($id);
+        } else {
+            // For admins, allow viewing any wedding event
+            $weddingEvent = WeddingEvent::with(['couple', 'location', 'galleryImages'])->findOrFail($id);
+        }
+        
         $title = 'View Wedding Event';
         
         return view('wedding_events.show', [

@@ -64,16 +64,13 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h5>Image Preview</h5>
+                        <h5>Image Gallery</h5>
                         @if($galleryImage->image_url)
-                            <img src="{{ $galleryImage->image_url }}" alt="Gallery Image" class="img-fluid">
+                            <div class="gallery-container">
+                                <img src="{{ asset($galleryImage->image_url) }}" alt="{{ $galleryImage->description ?? 'Gallery Image' }}" class="img-fluid gallery-image" style="cursor: pointer;" onclick="openModal(this.src)">
+                            </div>
                         @else
                             <p>No image available</p>
-                        @endif
-                        
-                        @if($galleryImage->thumbnail_url)
-                            <h5 class="mt-3">Thumbnail Preview</h5>
-                            <img src="{{ $galleryImage->thumbnail_url }}" alt="Thumbnail" class="img-fluid" style="max-width: 200px;">
                         @endif
                     </div>
                 </div>
@@ -81,4 +78,50 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for image gallery -->
+<div id="galleryModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Gallery Image" class="img-fluid">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('styles')
+<style>
+    .gallery-image {
+        transition: transform 0.2s;
+        border-radius: 5px;
+    }
+    
+    .gallery-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .modal-body {
+        padding: 0;
+    }
+    
+    #modalImage {
+        max-height: 80vh;
+        object-fit: contain;
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+    function openModal(src) {
+        document.getElementById('modalImage').src = src;
+        $('#galleryModal').modal('show');
+    }
+</script>
 @endsection

@@ -28,7 +28,7 @@
                             <option value="">Select Couple</option>
                             @forelse($couples as $couple)
                                 <option value="{{ $couple->id }}" {{ (old('couple_id', $record->couple_id) == $couple->id) ? 'selected' : '' }}>
-                                    {{ $couple->groom_name }} & {{ $couple->bride_name }} - {{ $couple->wedding_date->format('d M Y') }}
+                                    {{ $couple->groom_name }} & {{ $couple->bride_name }} - {{ $couple->wedding_date ? $couple->wedding_date->format('d M Y') : '' }}
                                 </option>
                             @empty
                                 <option value="" disabled>No couples available. Please <a href="{{ route('couples.create') }}">create a couple</a> first.</option>
@@ -57,7 +57,7 @@
                     
                     <div class="form-group mb-3">
                         <label for="event_time" class="form-label">Event Time</label>
-                        <input type="time" name="event_time" id="event_time" class="form-control" value="{{ old('event_time', $record->event_time ? $record->event_time->format('H:i') : '') }}">
+                        <input type="time" name="event_time" id="event_time" class="form-control" value="{{ old('event_time', $record->event_time ? \Carbon\Carbon::parse($record->event_time)->format('H:i') : '') }}">
                         @error('event_time')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -65,7 +65,7 @@
                     
                     <div class="form-group mb-3">
                         <label for="end_time" class="form-label">End Time</label>
-                        <input type="time" name="end_time" id="end_time" class="form-control" value="{{ old('end_time', $record->end_time ? $record->end_time->format('H:i') : '') }}">
+                        <input type="time" name="end_time" id="end_time" class="form-control" value="{{ old('end_time', $record->end_time ? \Carbon\Carbon::parse($record->end_time)->format('H:i') : '') }}">
                         @error('end_time')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror

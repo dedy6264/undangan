@@ -36,7 +36,7 @@
                                     <tr>
                                         <td>{{ $weddingEvent->couple->groom_name }} & {{ $weddingEvent->couple->bride_name }}</td>
                                         <td>{{ $weddingEvent->event_name }}</td>
-                                        <td>{{ $weddingEvent->event_date->format('d M Y') }}</td>
+                                        <td>{{ $weddingEvent->event_date ? $weddingEvent->event_date->format('d M Y') : '-' }}</td>
                                         <td>{{ $weddingEvent->event_time ?? 'N/A' }}</td>
                                         <td>{{ $weddingEvent->end_time ?? 'N/A' }}</td>
                                         <td>

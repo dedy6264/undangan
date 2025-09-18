@@ -48,8 +48,14 @@
                             <td>{{ $record->full_name }}</td>
                         </tr>
                         <tr>
-                            <th>Image URL:</th>
-                            <td>{{ $record->image_url ?? 'N/A' }}</td>
+                            <th>Photo:</th>
+                            <td>
+                                @if($record->image_url)
+                                    <img src="{{ asset($record->image_url) }}" alt="{{ $record->full_name }}" style="max-width: 200px; max-height: 200px;">
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>Additional Info:</th>

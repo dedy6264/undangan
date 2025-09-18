@@ -23,16 +23,12 @@ class PersonController extends CrudController
      */
     public function index(): View
     {
-        $records = Person::with('couple')->latest()->paginate(10);
+        $people = Person::with('couple')->latest()->paginate(10);
         $title = 'People';
         
-        return view('admin.crud.index', [
-            'records' => $records,
+        return view('people.index', [
+            'people' => $people,
             'title' => $title,
-            'columns' => ['couple_id', 'role', 'full_name', 'image_url'],
-            'createRoute' => route('people.create'),
-            'editRoute' => 'people.edit',
-            'deleteRoute' => 'people.destroy',
         ]);
     }
 
@@ -56,7 +52,7 @@ class PersonController extends CrudController
             'couple_id' => 'required|exists:couples,id',
             'role' => 'required|in:groom,bride',
             'full_name' => 'required|string|max:100',
-            'image_url' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // File validation
             'additional_info' => 'nullable|string',
             // Person Parent validation rules
             'father_name' => 'nullable|string|max:100',
@@ -65,6 +61,9 @@ class PersonController extends CrudController
             'mother_status' => 'nullable|in:alive,deceased',
         ], [
             'couple_id.unique' => 'A person with this role already exists for the selected couple.',
+            'image.image' => 'The uploaded file must be an image (jpeg, png, gif).',
+            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif.',
+            'image.max' => 'The image may not be greater than 2MB.',
         ]);
 
         // Check if a person with the same couple_id and role already exists
@@ -78,10 +77,23 @@ class PersonController extends CrudController
                 ->withErrors(['couple_id' => 'A person with this role already exists for the selected couple.']);
         }
 
+        // Handle file upload
+        $imageUrl = $request->image_url; // Keep existing URL if no file uploaded
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/people'), $imageName);
+            $imageUrl = 'images/people/' . $imageName;
+        }
+
         // Create the person
-        $person = Person::create($request->only([
-            'couple_id', 'role', 'full_name', 'image_url', 'additional_info'
-        ]));
+        $person = Person::create([
+            'couple_id' => $request->couple_id,
+            'role' => $request->role,
+            'full_name' => $request->full_name,
+            'image_url' => $imageUrl,
+            'additional_info' => $request->additional_info,
+        ]);
 
         // Create or update person parent information
         if ($person && ($request->father_name || $request->mother_name)) {
@@ -129,13 +141,17 @@ class PersonController extends CrudController
             'couple_id' => 'required|exists:couples,id',
             'role' => 'required|in:groom,bride',
             'full_name' => 'required|string|max:100',
-            'image_url' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // File validation
             'additional_info' => 'nullable|string',
             // Person Parent validation rules
             'father_name' => 'nullable|string|max:100',
             'father_status' => 'nullable|in:alive,deceased',
             'mother_name' => 'nullable|string|max:100',
             'mother_status' => 'nullable|in:alive,deceased',
+        ], [
+            'image.image' => 'The uploaded file must be an image (jpeg, png, gif).',
+            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif.',
+            'image.max' => 'The image may not be greater than 2MB.',
         ]);
 
         // Check if a person with the same couple_id and role already exists (excluding current record)
@@ -150,9 +166,27 @@ class PersonController extends CrudController
                 ->withErrors(['couple_id' => 'A person with this role already exists for the selected couple.']);
         }
 
-        $record->update($request->only([
-            'couple_id', 'role', 'full_name', 'image_url', 'additional_info'
-        ]));
+        // Handle file upload
+        $imageUrl = $request->image_url; // Keep existing URL if no file uploaded
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Delete old image if it exists and is a local file
+            if ($record->image_url && file_exists(public_path($record->image_url))) {
+                unlink(public_path($record->image_url));
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/people'), $imageName);
+            $imageUrl = 'images/people/' . $imageName;
+        }
+
+        $record->update([
+            'couple_id' => $request->couple_id,
+            'role' => $request->role,
+            'full_name' => $request->full_name,
+            'image_url' => $imageUrl,
+            'additional_info' => $request->additional_info,
+        ]);
 
         // Create or update person parent information
         if ($request->father_name || $request->mother_name) {

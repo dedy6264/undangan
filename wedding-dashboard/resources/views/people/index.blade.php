@@ -28,7 +28,7 @@
                                 <th>Couple</th>
                                 <th>Role</th>
                                 <th>Full Name</th>
-                                <th>Image URL</th>
+                                <th>Photo</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -41,7 +41,13 @@
                                 <td>{{ $person->couple->groom_name }} & {{ $person->couple->bride_name }}</td>
                                 <td>{{ ucfirst($person->role) }}</td>
                                 <td>{{ $person->full_name }}</td>
-                                <td>{{ $person->image_url }}</td>
+                                <td>
+                                    @if($person->image_url)
+                                        <img src="{{ asset($person->image_url) }}" alt="{{ $person->full_name }}" style="max-width: 50px; max-height: 50px;">
+                                    @else
+                                        No Image
+                                    @endif
+                                </td>
                                 <td>{{ $person->created_at->format('d M Y') }}</td>
                                 <td>
                                     <a href="{{ route('people.show', $person) }}" class="btn btn-info btn-sm">

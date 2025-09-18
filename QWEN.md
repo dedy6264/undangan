@@ -1,6 +1,6 @@
-1. buat 1 menu sidebar bernama create order
+1. buat lagi menu sidebar bernama create order
 2. create order merupakan form input transaksi yang terbagi dari beberapa section atau Multi-step / Wizard Form pembagian sebagaii berikut:
-    a. client->couple->people->wedding_event->location (sebelum masuk ke client, memilih package, lalu membawa id package lalu mengisi form user akses dashboard)
+    a. client->couple->people->wedding_event->location (sebelum masuk ke client, memilih package, lalu membawa id package )
     b. lalu setiap section disimpan ketabel masing-masing sesuai dengan urutan struktur tabel database
     c. setelah berhasil dilanjutkan dengan pemilihan metode pembayaran dan dilanjutkan insert tabel transaksi dan tabel pembayaran dengan status pending.
 

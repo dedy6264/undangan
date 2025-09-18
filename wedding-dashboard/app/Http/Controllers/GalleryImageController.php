@@ -53,16 +53,38 @@ class GalleryImageController extends CrudController
     {
         $request->validate([
             'wedding_event_id' => 'required|exists:wedding_events,id',
-            'image_url' => 'required|string|max:255',
-            'thumbnail_url' => 'nullable|string|max:255',
+            'images' => 'required|array|min:1', // Require at least one image
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validate each image
             'description' => 'nullable|string',
             'sort_order' => 'nullable|integer',
+        ], [
+            'images.required' => 'Please select at least one image to upload.',
+            'images.*.image' => 'Each file must be an image (jpeg, png, jpg, gif).',
+            'images.*.mimes' => 'Each image must be a file of type: jpeg, png, jpg, gif.',
+            'images.*.max' => 'Each image may not be greater than 2MB.',
         ]);
 
-        GalleryImage::create($request->all());
+        // Process each uploaded image
+        foreach ($request->file('images') as $image) {
+            if ($image->isValid()) {
+                // Generate unique filename
+                $imageName = time() . '_' . uniqid() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/gallery'), $imageName);
+                $imageUrl = 'images/gallery/' . $imageName;
+
+                // Create gallery image record
+                GalleryImage::create([
+                    'wedding_event_id' => $request->wedding_event_id,
+                    'image_url' => $imageUrl,
+                    'thumbnail_url' => $imageUrl, // For simplicity, use the same image as thumbnail
+                    'description' => $request->description,
+                    'sort_order' => $request->sort_order ?? 0,
+                ]);
+            }
+        }
 
         return redirect()->route('gallery-images.index')
-            ->with('success', 'Gallery Image created successfully.');
+            ->with('success', 'Gallery Images created successfully.');
     }
 
     /**
@@ -101,16 +123,38 @@ class GalleryImageController extends CrudController
      */
     public function update(Request $request, $id): RedirectResponse
     {
+        $record = GalleryImage::findOrFail($id);
+        
         $request->validate([
             'wedding_event_id' => 'required|exists:wedding_events,id',
-            'image_url' => 'required|string|max:255',
-            'thumbnail_url' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional single image update
             'description' => 'nullable|string',
             'sort_order' => 'nullable|integer',
+        ], [
+            'image.image' => 'The uploaded file must be an image (jpeg, png, jpg, gif).',
+            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif.',
+            'image.max' => 'The image may not be greater than 2MB.',
         ]);
 
-        $record = GalleryImage::findOrFail($id);
-        $record->update($request->all());
+        // Handle file upload if a new image is provided
+        $data = $request->only(['wedding_event_id', 'description', 'sort_order']);
+        
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Delete old image if it exists and is a local file
+            if ($record->image_url && file_exists(public_path($record->image_url))) {
+                unlink(public_path($record->image_url));
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/gallery'), $imageName);
+            $imageUrl = 'images/gallery/' . $imageName;
+            
+            $data['image_url'] = $imageUrl;
+            $data['thumbnail_url'] = $imageUrl; // For simplicity, use the same image as thumbnail
+        }
+
+        $record->update($data);
 
         return redirect()->route('gallery-images.index')
             ->with('success', 'Gallery Image updated successfully.');
