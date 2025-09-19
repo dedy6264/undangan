@@ -57,7 +57,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('bank-accounts', BankAccountController::class);
     Route::resource('guests', GuestController::class);
     Route::resource('invitations', InvitationController::class);
-    Route::resource('qr-codes', QrCodeController::class);
+    Route::get('qr-codes/{id}/invitation-card', [QrCodeController::class, 'showInvitationCard'])->name('qr-codes.invitation-card');
+    Route::resource('qr-codes', QrCodeController::class)->only(['index']);
     Route::resource('guest-messages', GuestMessageController::class);
     Route::resource('packages', PackageController::class);
     Route::resource('transactions', TransactionController::class);

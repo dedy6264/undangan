@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guest;
+use App\Models\Couple;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -13,7 +14,7 @@ class GuestController extends CrudController
     {
         $this->model = Guest::class;
         $this->routePrefix = 'guests';
-        $this->columns = ['id', 'name', 'email', 'phone', 'created_at', 'updated_at'];
+        $this->columns = ['id', 'couple_id', 'name', 'email', 'phone', 'guest_index', 'created_at', 'updated_at'];
     }
     
     /**
@@ -21,16 +22,12 @@ class GuestController extends CrudController
      */
     public function index(): View
     {
-        $records = Guest::latest()->paginate(10);
+        $guests = Guest::with('couple')->latest()->paginate(10);
         $title = 'Guests';
         
-        return view('admin.crud.index', [
-            'records' => $records,
+        return view('guests.index', [
+            'guests' => $guests,
             'title' => $title,
-            'columns' => ['name', 'email', 'phone'],
-            'createRoute' => route('guests.create'),
-            'editRoute' => 'guests.edit',
-            'deleteRoute' => 'guests.destroy',
         ]);
     }
 
@@ -40,11 +37,12 @@ class GuestController extends CrudController
     public function create(): View
     {
         $title = 'Create Guest';
+        $couples = Couple::all();
         
-        return view('admin.crud.create', [
+        return view('guests.create', [
             'title' => $title,
-            'columns' => ['name', 'email', 'phone'],
             'storeRoute' => route('guests.store'),
+            'couples' => $couples,
         ]);
     }
 
@@ -54,12 +52,25 @@ class GuestController extends CrudController
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'couple_id' => 'required|exists:couples,id',
             'name' => 'required|string|max:100',
             'email' => 'nullable|email|max:150',
             'phone' => 'nullable|string|max:20',
         ]);
 
-        Guest::create($request->all());
+        // Generate guest_index as combination of couple_id and phone
+        $guestIndex = null;
+        if ($request->phone) {
+            $guestIndex = $request->couple_id . '_' . preg_replace('/[^0-9]/', '', $request->phone);
+        }
+
+        Guest::create([
+            'couple_id' => $request->couple_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'guest_index' => $guestIndex,
+        ]);
 
         return redirect()->route('guests.index')
             ->with('success', 'Guest created successfully.');
@@ -70,13 +81,12 @@ class GuestController extends CrudController
      */
     public function show($id): View
     {
-        $record = Guest::findOrFail($id);
+        $guest = Guest::with('couple')->findOrFail($id);
         $title = 'View Guest';
         
-        return view('admin.crud.show', [
-            'record' => $record,
+        return view('guests.show', [
+            'guest' => $guest,
             'title' => $title,
-            'columns' => ['name', 'email', 'phone', 'created_at', 'updated_at'],
         ]);
     }
 
@@ -87,12 +97,13 @@ class GuestController extends CrudController
     {
         $record = Guest::findOrFail($id);
         $title = 'Edit Guest';
+        $couples = Couple::all();
         
-        return view('admin.crud.edit', [
+        return view('guests.edit', [
             'record' => $record,
             'title' => $title,
-            'columns' => ['name', 'email', 'phone'],
             'updateRoute' => route('guests.update', $record->id),
+            'couples' => $couples,
         ]);
     }
 
@@ -102,13 +113,27 @@ class GuestController extends CrudController
     public function update(Request $request, $id): RedirectResponse
     {
         $request->validate([
+            'couple_id' => 'required|exists:couples,id',
             'name' => 'required|string|max:100',
             'email' => 'nullable|email|max:150',
             'phone' => 'nullable|string|max:20',
         ]);
 
         $record = Guest::findOrFail($id);
-        $record->update($request->all());
+        
+        // Generate guest_index as combination of couple_id and phone
+        $guestIndex = null;
+        if ($request->phone) {
+            $guestIndex = $request->couple_id . '_' . preg_replace('/[^0-9]/', '', $request->phone);
+        }
+
+        $record->update([
+            'couple_id' => $request->couple_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'guest_index' => $guestIndex,
+        ]);
 
         return redirect()->route('guests.index')
             ->with('success', 'Guest updated successfully.');

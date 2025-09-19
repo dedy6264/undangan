@@ -4,13 +4,13 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'View Timeline Event' }}</h1>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'View Timeline Event' }}</h1>
     <div>
-        <a href="{{ route('timeline-events.edit', $timelineEvent) }}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
+        <a href="{{ route('timeline-events.edit', $timelineEvent) }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-warning">
             <i class="fas fa-edit fa-sm text-white-50"></i> Edit
         </a>
-        <a href="{{ route('timeline-events.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+        <a href="{{ route('timeline-events.index') }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Timeline Events
         </a>
     </div>
@@ -19,8 +19,8 @@
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Timeline Event Details' }}</h6>
             </div>
             <div class="card-body">
@@ -76,7 +76,7 @@
                     <div class="col-md-6">
                         <h5>Image Preview</h5>
                         @if($timelineEvent->image_url)
-                            <img src="{{ $timelineEvent->image_url }}" alt="Timeline Image" class="img-fluid">
+                            <img src="{{ asset($timelineEvent->image_url) }}" alt="Timeline Image" class="img-fluid">
                         @else
                             <p>No image available</p>
                         @endif

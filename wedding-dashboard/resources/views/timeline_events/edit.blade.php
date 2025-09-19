@@ -19,7 +19,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Edit Timeline Event' }}</h6>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ $updateRoute ?? route('timeline-events.update', $record->id) }}">
+                <form method="POST" action="{{ $updateRoute ?? route('timeline-events.update', $record->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
@@ -65,11 +65,28 @@
                     </div>
                     
                     <div class="form-group mb-3">
-                        <label for="image_url" class="form-label">Image URL</label>
-                        <input type="text" name="image_url" id="image_url" class="form-control" value="{{ old('image_url', $record->image_url) }}">
-                        @error('image_url')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        <label for="image" class="form-label">Image</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                                @error('image')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">Allowed types: jpeg, png, jpg, gif. Max size: 2MB</small>
+                                @if($record->image_url)
+                                    <div class="mt-2">
+                                        <small class="form-text text-muted">Current image:</small>
+                                        <img src="{{ asset($record->image_url) }}" alt="Current Image" class="img-fluid" style="max-height: 100px; object-fit: cover;">
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <div id="imagePreviewContainer" style="display: none;">
+                                    <p class="mb-1"><strong>New Image Preview:</strong></p>
+                                    <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid" style="max-height: 200px; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group mb-3">
@@ -100,4 +117,27 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const previewImage = document.getElementById('imagePreview');
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    });
+</script>
 @endsection

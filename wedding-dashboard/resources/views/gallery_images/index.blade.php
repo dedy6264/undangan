@@ -11,12 +11,58 @@
     </a>
 </div>
 
-<!-- Content Row -->
+<!-- Filter Form -->
 <div class="row">
     <div class="col-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Filter Gallery Images</h6>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ route('gallery-images.index') }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="wedding_event_id">Wedding Event</label>
+                                <select name="wedding_event_id" id="wedding_event_id" class="form-control">
+                                    <option value="">All Wedding Events</option>
+                                    @foreach($weddingEvents as $weddingEvent)
+                                        <option value="{{ $weddingEvent->id }}" {{ (isset($selectedWeddingEventId) && $selectedWeddingEventId == $weddingEvent->id) ? 'selected' : '' }}>
+                                            {{ $weddingEvent->event_name }} - {{ $weddingEvent->couple->groom_name }} & {{ $weddingEvent->couple->bride_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group d-flex align-items-end h-100">
+                                <div>
+                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                    <a href="{{ route('gallery-images.index') }}" class="btn btn-secondary">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Gallery Images' }} List</h6>
+                @if(isset($selectedWeddingEventId) && $selectedWeddingEventId)
+                    @php
+                        $currentEvent = $weddingEvents->firstWhere('id', $selectedWeddingEventId);
+                    @endphp
+                    @if($currentEvent)
+                        <span class="badge badge-info">Filtered by: {{ $currentEvent->event_name }} - {{ $currentEvent->couple->groom_name }} & {{ $currentEvent->couple->bride_name }}</span>
+                    @endif
+                @endif
             </div>
             <div class="card-body">
                 @if ($galleryImages->count() > 0)

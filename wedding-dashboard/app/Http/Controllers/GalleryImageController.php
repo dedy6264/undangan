@@ -22,12 +22,23 @@ class GalleryImageController extends CrudController
      */
     public function index(): View
     {
-        $galleryImages = GalleryImage::with('weddingEvent.couple')->latest()->paginate(10);
+        $request = request();
+        $query = GalleryImage::with('weddingEvent.couple');
+        
+        // Apply wedding event filter if provided
+        if ($request->has('wedding_event_id') && $request->wedding_event_id != '') {
+            $query->where('wedding_event_id', $request->wedding_event_id);
+        }
+        
+        $galleryImages = $query->latest()->paginate(10);
         $title = 'Gallery Images';
+        $weddingEvents = WeddingEvent::with('couple')->get();
         
         return view('gallery_images.index', [
             'galleryImages' => $galleryImages,
             'title' => $title,
+            'weddingEvents' => $weddingEvents,
+            'selectedWeddingEventId' => $request->wedding_event_id ?? null,
         ]);
     }
 
