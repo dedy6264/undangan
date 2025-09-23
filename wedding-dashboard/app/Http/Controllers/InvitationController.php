@@ -101,7 +101,7 @@ class InvitationController extends CrudController
      */
     public function show($id): View
     {
-        $invitation = Invitation::with(['guest', 'weddingEvent'])->findOrFail($id);
+        $invitation = Invitation::with(['guest', 'weddingEvent', 'qrCode'])->findOrFail($id);
         $title = 'View Invitation';
         
         return view('invitations.show', [
