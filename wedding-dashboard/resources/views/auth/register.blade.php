@@ -86,10 +86,71 @@
                                     </div>
                                 </div>
 
+                                <!-- Hidden role field - always client -->
+                                <input type="hidden" name="role" value="client">
+
+                                <!-- Client Information -->
+                                <div id="client-info">
+                                    <!-- Client name is taken from the user's name field -->
+                                    <input type="hidden" name="client_name" value="{{ old('name') }}">
+
+                                    <div class="form-group">
+                                        <input type="text" name="nik" class="form-control form-control-user"
+                                            id="clientNik" placeholder="{{ __('NIK') }}" 
+                                            value="{{ old('nik') }}">
+                                        @if ($errors->has('nik'))
+                                            <div class="text-danger mt-2">
+                                                {{ $errors->first('nik') }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="text" name="address" class="form-control form-control-user"
+                                            id="clientAddress" placeholder="{{ __('Address') }}" 
+                                            value="{{ old('address') }}">
+                                        @if ($errors->has('address'))
+                                            <div class="text-danger mt-2">
+                                                {{ $errors->first('address') }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="text" name="phone" class="form-control form-control-user"
+                                            id="clientPhone" placeholder="{{ __('Phone') }}" 
+                                            value="{{ old('phone') }}">
+                                        @if ($errors->has('phone'))
+                                            <div class="text-danger mt-2">
+                                                {{ $errors->first('phone') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
                                 <button type="submit" class="btn btn-primary btn-user btn-block">
                                     {{ __('Register Account') }}
                                 </button>
                             </form>
+
+                            <script>
+                                document.getElementById('role').addEventListener('change', function() {
+                                    const clientInfo = document.getElementById('client-info');
+                                    if (this.value === 'client') {
+                                        clientInfo.style.display = 'block';
+                                    } else {
+                                        clientInfo.style.display = 'none';
+                                    }
+                                });
+
+                                // Show client info on page load if role was previously selected as client
+                                window.addEventListener('DOMContentLoaded', function() {
+                                    const roleSelect = document.getElementById('role');
+                                    if (roleSelect.value === 'client') {
+                                        document.getElementById('client-info').style.display = 'block';
+                                    }
+                                });
+                            </script>
 
                             <hr>
                             <div class="text-center">

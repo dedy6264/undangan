@@ -34,28 +34,28 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:client,admin'],
-            'client_name' => ['required_if:role,client', 'max:100'],
+            'nik' => ['nullable', 'string', 'max:50', 'unique:clients,nik'],
             'address' => ['nullable', 'max:100'],
-            'phone' => ['nullable', 'max:50'],
+            'phone' => ['nullable', 'max:50', 'unique:clients,phone'],
+        ], [
+            'nik.unique' => 'A client with this NIK already exists.',
+            'phone.unique' => 'A client with this phone number already exists.',
         ]);
 
-        // Create client if role is client
-        $clientId = null;
-        if ($request->role === 'client') {
-            $client = Client::create([
-                'client_name' => $request->client_name,
-                'address' => $request->address,
-                'phone' => $request->phone,
-            ]);
-            $clientId = $client->id;
-        }
+        // Always create a client with the user's name as client_name
+        $client = Client::create([
+            'client_name' => $request->name,
+            'nik' => $request->nik,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+        $clientId = $client->id;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'client', // Always set role to client
             'client_id' => $clientId,
         ]);
 
