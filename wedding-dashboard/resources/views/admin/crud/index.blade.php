@@ -7,7 +7,7 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'Management' }}</h1>
     @if (isset($createRoute))
-        <a href="{{ $createRoute }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <a href="{{ $createRoute }}"" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i> Add New
         </a>
     @endif
@@ -36,7 +36,19 @@
                                 @foreach ($records as $record)
                                     <tr>
                                         @foreach ($columns as $column)
-                                            <td>{{ $record->$column ?? 'N/A' }}</td>
+                                            <td>
+                                                @if ($column === 'guest_id' && isset($record->guest))
+                                                    {{ $record->guest->name ?? $record->$column }}
+                                                @elseif ($column === 'wedding_event_id' && isset($record->weddingEvent))
+                                                    {{ $record->weddingEvent->event_name ?? $record->$column }}
+                                                @elseif ($column === 'client_id' && isset($record->guest))
+                                                    {{ $record->guest->client->client_name ?? $record->$column }}
+                                                @elseif ($column === 'is_approved')
+                                                    {{ $record->$column ? 'Yes' : 'No' }}
+                                                @else
+                                                    {{ $record->$column ?? 'N/A' }}
+                                                @endif
+                                            </td>
                                         @endforeach
                                         <td>
                                             @if (isset($editRoute))
