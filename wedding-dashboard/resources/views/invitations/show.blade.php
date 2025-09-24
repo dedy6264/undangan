@@ -70,8 +70,8 @@
                 @if(isset($indexRoute))
                 <a href="{{ $indexRoute }}" class="btn btn-secondary">Back to List</a>
                 @endif
-                @if(isset($destroyRoute))
-                <form action="{{ route($destroyRoute, $invitation) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
+                @if(isset($deleteRoute))
+                <form action="{{ route($deleteRoute, $invitation) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">

@@ -109,7 +109,7 @@ class WeddingEventController extends CrudController
             'indexRoute' => route($this->routePrefix.'.index'),
             'editRoute' => $this->routePrefix.'.edit',
             'locationRoute' => $this->locationRoutePrefix,
-            'galleryImageRoute' => $this->galleryImageRoutePrefix,
+            'galleryImageRoute' => $this->galleryRoutePrefix,
         ]);
     }
 

@@ -108,6 +108,8 @@ Route::middleware(['auth', 'client'])->group(function () {
     Route::resource('my-invitations', InvitationController::class);
     Route::resource('my-guest-messages', GuestMessageController::class);
     Route::resource('my-transactions', TransactionController::class);
+    Route::resource('my-locations', LocationController::class);
+
 });
 
 require __DIR__.'/auth.php';

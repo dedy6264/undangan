@@ -59,8 +59,8 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             @endif
-                                            @if(isset($destroyRoute))
-                                            <form action="{{ route($destroyRoute, $bankAccount) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this bank account?');">
+                                            @if(isset($deleteRoute))
+                                            <form action="{{ route($deleteRoute, $bankAccount) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this bank account?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

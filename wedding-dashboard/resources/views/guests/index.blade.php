@@ -52,8 +52,8 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             @endif
-                                            @if(isset($destroyRoute))
-                                            <form action="{{ route($destroyRoute, $guest) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this guest?');">
+                                            @if(isset($deleteRoute))
+                                            <form action="{{ route($deleteRoute, $guest) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this guest?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

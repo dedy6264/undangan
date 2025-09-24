@@ -78,8 +78,8 @@
                         </tr>
                         <tr>
                             <th>
-                                @if(isset($locationRouteprefix))
-                                <a href="{{ route($locationRouteprefix.'.edit', $weddingEvent->location) }}" class="btn btn-sm btn-warning">Edit Location</a>
+                                @if(isset($locationRoute))
+                                <a href="{{ route($locationRoute.'.edit', $weddingEvent->location) }}" class="btn btn-sm btn-warning">Edit Location</a>
                                 @endif
                             </th>
                             <td></td>
@@ -88,8 +88,8 @@
                 </div>
                 @else
                 <p>No location information found for this event.</p>
-                    @if(isset($locationRouteprefix))
-                    <a href="{{ route($locationRouteprefix.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Location</a>
+                    @if(isset($locationRoute))
+                    <a href="{{ route($locationRoute.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Location</a>
                     @endif
                 @endif
                 
@@ -99,11 +99,11 @@
                     @foreach($weddingEvent->galleryImages as $image)
                     <div class="mb-3 col-md-3">
                         <div class="card">
-                            <img src="{{ $image->image_url }}" class="card-img-top" alt="{{ $image->description }}" style="height: 150px; object-fit: cover;">
+                            <img src="{{ url($image->image_url) }}" class="card-img-top" alt="{{ $image->description }}" style="height: 150px; object-fit: cover;">
                             <div class="card-body">
                                 <p class="card-text">{{ $image->description }}</p>
-                                @if(isset($galleryImageRouteprefix))
-                                <a href="{{ route($galleryImageRouteprefix.'.edit', $image) }}" class="btn btn-sm btn-warning">Edit</a>
+                                @if(isset($galleryImageRoute))
+                                <a href="{{ route($galleryImageRoute.'.edit', $image) }}" class="btn btn-sm btn-warning">Edit</a>
                                 @endif
                             </div>
                         </div>
@@ -113,8 +113,8 @@
                 @else
                 <p>No gallery images found for this event.</p>
                 @endif
-                @if(isset($galleryImageRouteprefix))
-                <a href="{{ route($galleryImageRouteprefix.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Gallery Image</a>
+                @if(isset($galleryImageRoute))
+                <a href="{{ route($galleryImageRoute.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Gallery Image</a>
                 @endif
             </div>
         </div>

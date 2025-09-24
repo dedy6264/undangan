@@ -104,8 +104,8 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 @endif
-                                                @if(isset($destroyRoute))
-                                                <form action="{{ route($destroyRoute, $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
+                                                @if(isset($deleteRoute))
+                                                <form action="{{ route($deleteRoute, $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger">

@@ -61,8 +61,8 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             @endif
-                                            @if(isset($destroyRoute))
-                                            <form action="{{ route($destroyRoute, $timelineEvent) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this timeline event?');">
+                                            @if(isset($deleteRoute))
+                                            <form action="{{ route($deleteRoute, $timelineEvent) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this timeline event?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

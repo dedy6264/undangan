@@ -50,19 +50,25 @@
                                         </td>
                                         <td>{{ $invitation->responded_at ? $invitation->responded_at->format('d M Y, H:i') : 'N/A' }}</td>
                                         <td>
-                                            <a href="{{ route('invitations.show', $invitation) }}" class="btn btn-sm btn-info">
+                                            @if(isset($showRoute))
+                                            <a href="{{ route($showRoute, $invitation) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('invitations.edit', $invitation) }}" class="btn btn-sm btn-primary">
+                                            @endif
+                                            @if(isset($editRoute))
+                                            <a href="{{ route($editRoute, $invitation) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('invitations.destroy', $invitation) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
+                                            @endif
+                                            @if(isset($deleteRoute))
+                                            <form action="{{ route($deleteRoute, $invitation) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
