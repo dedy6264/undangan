@@ -12,8 +12,10 @@ class CoupleController extends CrudController
 {
     public function __construct()
     {
+        $this->role=auth()->user()->role ;
+
         $this->model = Couple::class;
-        $this->routePrefix = 'couples';
+        $this->routePrefix = auth()->user()->role=="client" ? 'my-couples':'couples';
         $this->columns = ['id', 'client_id', 'groom_name', 'bride_name', 'wedding_date', 'created_at', 'updated_at'];
     }
     
@@ -22,15 +24,16 @@ class CoupleController extends CrudController
      */
     public function index(): View
     {
+
         $records = Couple::with('client')->latest()->paginate(10);
         $title = 'Couples';
         
         return view('couples.index', [
             'records' => $records,
             'title' => $title,
-            'createRoute' => route('couples.create'),
-            'editRoute' => 'couples.edit',
-            'deleteRoute' => 'couples.destroy',
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -42,9 +45,9 @@ class CoupleController extends CrudController
         $title = 'Create Couple';
         $clients = Client::all();
         
-        return view('couples.create', [
+        return view($this->routePrefix.'.create', [
             'title' => $title,
-            'storeRoute' => route('couples.store'),
+            'storeRoute' => route($this->routePrefix.'.store'),
             'clients' => $clients,
         ]);
     }
@@ -63,7 +66,7 @@ class CoupleController extends CrudController
 
         Couple::create($request->all());
 
-        return redirect()->route('couples.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Couple created successfully.');
     }
 
@@ -94,7 +97,7 @@ class CoupleController extends CrudController
         return view('couples.edit', [
             'record' => $couple,
             'title' => $title,
-            'updateRoute' => route('couples.update', $couple->id),
+            'updateRoute' => route($this->routePrefix.'.update', $couple->id),
             'clients' => $clients,
         ]);
     }
@@ -114,7 +117,7 @@ class CoupleController extends CrudController
         $couple = Couple::findOrFail($id);
         $couple->update($request->all());
 
-        return redirect()->route('couples.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Couple updated successfully.');
     }
 
@@ -125,8 +128,7 @@ class CoupleController extends CrudController
     {
         $couple = Couple::findOrFail($id);
         $couple->delete();
-
-        return redirect()->route('couples.index')
+        return  redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Couple deleted successfully.');
     }
 }

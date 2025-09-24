@@ -22,13 +22,24 @@ class OrderController extends Controller
     /**
      * Show the package selection step.
      */
-    public function step1(): View
+    public function step1(Request $request): View
     {
         $packages = Package::all();
         $title = 'Create Order - Step 1: Select Package';
         
+        // Get the authenticated user
+        $user = $request->user();
+        
+        // For admin users, get all clients for dropdown
+        $clients = [];
+        if ($user->role === 'admin') {
+            $clients = Client::all();
+        }
+        
         return view('orders.step1', [
             'packages' => $packages,
+            'clients' => $clients,
+            'user' => $user,
             'title' => $title,
             'step' => 1,
             'progress' => 14,
@@ -40,13 +51,36 @@ class OrderController extends Controller
      */
     public function processStep1(Request $request): RedirectResponse
     {
+        // Get the authenticated user
+        $user = $request->user();
+        
+        // Validate package selection
         $validatedData = $request->validate([
             'package_id' => 'required|exists:packages,id',
+            'client_id' => $user->role === 'admin' ? 'required|exists:clients,id' : 'nullable',
         ]);
 
         // Store package_id in session for later use
         session(['order_package_id' => $validatedData['package_id']]);
 
+        // For admin users, store selected client_id in session
+        if ($user->role === 'admin' && isset($validatedData['client_id'])) {
+            session(['order_client_id' => $validatedData['client_id']]);
+            // Skip step 2 (client creation) and go directly to step 3
+            return redirect()->route('create-order.step3')
+                ->with('success', 'Package and client selected successfully.');
+        }
+        
+        // For regular users, use their own client_id
+        if ($user->role === 'client' && $user->client_id) {
+            session(['order_client_id' => $user->client_id]);
+            // Skip step 2 (client creation) and go directly to step 3
+            return redirect()->route('create-order.step3')
+                ->with('success', 'Package selected successfully.');
+        }
+
+        // If we reach here, it means admin didn't select a client or regular user has no client
+        // This shouldn't happen in normal circumstances, but we'll redirect to step 2 just in case
         return redirect()->route('create-order.step2')
             ->with('success', 'Package selected successfully.');
     }

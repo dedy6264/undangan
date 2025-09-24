@@ -13,8 +13,17 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        // Get the authenticated user
+        $user = $request->user();
+        
+        // Redirect to appropriate dashboard based on role
+        if ($user->role === 'client') {
+            return $this->clientIndex($request);
+        }
+        
+        // Admin dashboard
         $clientCount = Client::count();
         $coupleCount = Couple::count();
         $eventCount = WeddingEvent::count();
@@ -48,7 +57,7 @@ class DashboardController extends Controller
         $coupleIds = $couples->pluck('id');
         $events = WeddingEvent::whereIn('couple_id', $coupleIds)->get();
         
-        return view('client.dashboard-new', compact(
+        return view('clients.dashboard-new', compact(
             'client',
             'couples',
             'events'

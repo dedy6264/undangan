@@ -44,8 +44,38 @@
                     @endforeach
                 </div>
                 
+                <!-- Client selection for admin users -->
+                @if($user->role === 'admin')
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Select a Client</h5>
+                            <p>Please select the client for this order.</p>
+                            
+                            @if($clients->isEmpty())
+                                <div class="alert alert-warning">
+                                    No clients available. Please create a client first.
+                                </div>
+                                <a href="{{ route('clients.create') }}" class="btn btn-primary">Create Client</a>
+                            @else
+                                <div class="form-group">
+                                    <label for="client_id">Client</label>
+                                    <select name="client_id" id="client_id" class="form-control" required>
+                                        <option value="">Select a client</option>
+                                        @foreach($clients as $client)
+                                            <option value="{{ $client->id }}">{{ $client->client_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('client_id')
+                                        <div class="text-danger mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+                
                 <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">Continue to Client Information</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
                     <a href="{{ route('packages.index') }}" class="btn btn-secondary">Manage Packages</a>
                 </div>
             @endif

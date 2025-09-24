@@ -13,7 +13,7 @@ class WeddingEventController extends CrudController
     public function __construct()
     {
         $this->model = WeddingEvent::class;
-        $this->routePrefix = 'wedding-events';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-wedding-events':'wedding-events';
         $this->columns = ['id', 'couple_id', 'event_name', 'event_date', 'event_time', 'end_time', 'created_at', 'updated_at'];
     }
     
@@ -35,7 +35,7 @@ class WeddingEventController extends CrudController
         
         $title = 'Wedding Events';
         
-        return view('wedding_events.index', [
+        return view('wedding-events.index', [
             'weddingEvents' => $weddingEvents,
             'title' => $title,
         ]);
@@ -50,7 +50,7 @@ class WeddingEventController extends CrudController
         $couples = Couple::with('client')->get();
         
         // Using custom view instead of admin.crud.create
-        return view('wedding_events.create', [
+        return view('wedding-events..create', [
             'title' => $title,
             'couples' => $couples,
         ]);
@@ -71,14 +71,9 @@ class WeddingEventController extends CrudController
 
         WeddingEvent::create($request->all());
 
-        // Check if user is a client, redirect to my-wedding-events.index
-        if (auth()->user()->isClient()) {
-            return redirect()->route('my-wedding-events.index')
-                ->with('success', 'Wedding Event created successfully.');
-        }
-        
+       
         // For admin users, redirect to wedding-events.index
-        return redirect()->route('wedding-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Wedding Event created successfully.');
     }
 
@@ -100,7 +95,7 @@ class WeddingEventController extends CrudController
         
         $title = 'View Wedding Event';
         
-        return view('wedding_events.show', [
+        return view('wedding-events.show', [
             'weddingEvent' => $weddingEvent,
             'title' => $title,
         ]);
@@ -116,7 +111,7 @@ class WeddingEventController extends CrudController
         $couples = Couple::with('client')->get();
         
         // Using custom view instead of admin.crud.edit
-        return view('wedding_events.edit', [
+        return view('wedding-events.edit', [
             'record' => $weddingEvent,
             'title' => $title,
             'couples' => $couples,
@@ -140,13 +135,9 @@ class WeddingEventController extends CrudController
         $record->update($request->all());
 
         // Check if user is a client, redirect to my-wedding-events.index
-        if (auth()->user()->isClient()) {
-            return redirect()->route('my-wedding-events.index')
-                ->with('success', 'Wedding Event updated successfully.');
-        }
         
         // For admin users, redirect to wedding-events.index
-        return redirect()->route('wedding-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Wedding Event updated successfully.');
     }
 
@@ -158,7 +149,7 @@ class WeddingEventController extends CrudController
         $record = WeddingEvent::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('wedding-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Wedding Event deleted successfully.');
     }
 }

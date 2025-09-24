@@ -13,7 +13,7 @@ class GalleryImageController extends CrudController
     public function __construct()
     {
         $this->model = GalleryImage::class;
-        $this->routePrefix = 'gallery-images';
+        $this->routePrefix = auth()->user()->role=="client" ? 'my-gallery-images':'gallery-images';
         $this->columns = ['id', 'wedding_event_id', 'image_url', 'thumbnail_url', 'description', 'sort_order', 'created_at', 'updated_at'];
     }
     
@@ -34,7 +34,7 @@ class GalleryImageController extends CrudController
         $title = 'Gallery Images';
         $weddingEvents = WeddingEvent::with('couple')->get();
         
-        return view('gallery_images.index', [
+        return view( 'gallery-images.index', [
             'galleryImages' => $galleryImages,
             'title' => $title,
             'weddingEvents' => $weddingEvents,
@@ -50,9 +50,9 @@ class GalleryImageController extends CrudController
         $title = 'Create Gallery Image';
         $weddingEvents = WeddingEvent::with('couple')->get();
         
-        return view('gallery_images.create', [
+        return view( 'gallery-images.create', [
             'title' => $title,
-            'storeRoute' => route('gallery-images.store'),
+            'storeRoute' =>auth()->user()->role=="client" ? route('my-gallery-images.store'): route('gallery-images.store'),
             'weddingEvents' => $weddingEvents,
         ]);
     }
@@ -94,7 +94,7 @@ class GalleryImageController extends CrudController
             }
         }
 
-        return redirect()->route('gallery-images.index')
+        return redirect()->route( $this->routePrefix.'.index')
             ->with('success', 'Gallery Images created successfully.');
     }
 
@@ -106,7 +106,7 @@ class GalleryImageController extends CrudController
         $galleryImage = GalleryImage::with('weddingEvent.couple')->findOrFail($id);
         $title = 'View Gallery Image';
         
-        return view('gallery_images.show', [
+        return view( 'gallery-images.show', [
             'galleryImage' => $galleryImage,
             'title' => $title,
         ]);
@@ -124,7 +124,7 @@ class GalleryImageController extends CrudController
         return view('gallery_images.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('gallery-images.update', $record->id),
+            'updateRoute' => route( $this->routePrefix.'.update', $record->id),
             'weddingEvents' => $weddingEvents,
         ]);
     }
@@ -167,7 +167,7 @@ class GalleryImageController extends CrudController
 
         $record->update($data);
 
-        return redirect()->route('gallery-images.index')
+        return redirect()->route( $this->routePrefix.'.index')
             ->with('success', 'Gallery Image updated successfully.');
     }
 
@@ -179,7 +179,7 @@ class GalleryImageController extends CrudController
         $record = GalleryImage::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('gallery-images.index')
+        return redirect()->route( $this->routePrefix.'.index')
             ->with('success', 'Gallery Image deleted successfully.');
     }
 }

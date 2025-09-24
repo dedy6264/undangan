@@ -5,15 +5,15 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Client Dashboard</h1>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">Client Dashboard</h1>
 </div>
 
 <div class="row">
     @if(isset($client))
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+    <div class="mb-4 col-lg-6">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Your Profile</h6>
             </div>
             <div class="card-body">
@@ -40,9 +40,9 @@
         </div>
     </div>
 
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+    <div class="mb-4 col-lg-6">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Your Weddings</h6>
             </div>
             <div class="card-body">
@@ -76,38 +76,38 @@
                 @else
                     <p>You haven't registered any weddings yet.</p>
                     <div class="text-center">
-                        <a href="#" class="btn btn-primary">Create Your First Wedding</a>
+                        <a href="{{ route('create-order.step1')}}" class="btn btn-primary">Create Your First Wedding</a>
                     </div>
                 @endif
             </div>
         </div>
     </div>
     
-    <div class="col-lg-12 mb-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+    <div class="mb-4 col-lg-12">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3 mb-3">
+                    <div class="mb-3 col-md-3">
                         <a href="#" class="btn btn-primary btn-block">
-                            <i class="fas fa-heart mr-2"></i>Add Couple
+                            <i class="mr-2 fas fa-heart"></i>Add Couple
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="mb-3 col-md-3">
                         <a href="#" class="btn btn-success btn-block">
-                            <i class="fas fa-calendar-alt mr-2"></i>Add Event
+                            <i class="mr-2 fas fa-calendar-alt"></i>Add Event
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="mb-3 col-md-3">
                         <a href="#" class="btn btn-info btn-block">
-                            <i class="fas fa-images mr-2"></i>Manage Gallery
+                            <i class="mr-2 fas fa-images"></i>Manage Gallery
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="mb-3 col-md-3">
                         <a href="#" class="btn btn-warning btn-block">
-                            <i class="fas fa-history mr-2"></i>Add Timeline
+                            <i class="mr-2 fas fa-history"></i>Add Timeline
                         </a>
                     </div>
                 </div>
