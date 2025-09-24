@@ -22,6 +22,9 @@
                     @method('PUT')
                     
                     <div class="row">
+                        @if(auth()->user()->role==="client")
+                        <input type="text" id="client_id" name="client_id" value="{{ auth()->user()->client_id }}" hidden>
+                        @else
                         <div class="mb-3 col-md-6">
                             <label for="client_id">Client</label>
                             <select class="form-control" id="client_id" name="client_id" required>
@@ -38,7 +41,7 @@
                                 </div>
                             @endif
                         </div>
-                        
+                        @endif
                         <div class="mb-3 col-md-6">
                             <label for="groom_name">Groom Name</label>
                             <input type="text" class="form-control" id="groom_name" name="groom_name" 

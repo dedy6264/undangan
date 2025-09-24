@@ -4,26 +4,29 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'Edit Location' }}</h1>
-    <a href="{{ route('locations.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'Edit Location' }}</h1>
+    @if(isset($indexRoute))
+    <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
         <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Locations
     </a>
+    @endif
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Edit Location' }}</h6>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ $updateRoute ?? route('locations.update', $record->id) }}">
+                @if(isset($updateRoute))
+                <form method="POST" action="{{ $updateRoute  }}">
                     @csrf
                     @method('PUT')
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="wedding_event_id" class="form-label">Wedding Event <span class="text-danger">*</span></label>
                         <select name="wedding_event_id" id="wedding_event_id" class="form-control" required>
                             <option value="">Select Wedding Event</option>
@@ -40,7 +43,7 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="venue_name" class="form-label">Venue Name <span class="text-danger">*</span></label>
                         <input type="text" name="venue_name" id="venue_name" class="form-control" value="{{ old('venue_name', $record->venue_name) }}" required>
                         @error('venue_name')
@@ -48,7 +51,7 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
                         <textarea name="address" id="address" class="form-control" rows="3" required>{{ old('address', $record->address) }}</textarea>
                         @error('address')
@@ -56,7 +59,7 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="map_embed_url" class="form-label">Map Embed URL</label>
                         <input type="text" name="map_embed_url" id="map_embed_url" class="form-control" value="{{ old('map_embed_url', $record->map_embed_url) }}">
                         @error('map_embed_url')
@@ -67,8 +70,11 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Update Location
                     </button>
-                    <a href="{{ route('locations.index') }}" class="btn btn-secondary">Cancel</a>
+                    @if(isset($indexRoute))
+                    <a href="{{ $indexRoute }}" class="btn btn-secondary">Cancel</a>
+                    @endif
                 </form>
+                @endif
             </div>
         </div>
     </div>

@@ -34,7 +34,10 @@
                     </table>
                 </div>
                 <div class="text-right">
-                    <a href="#" class="btn btn-primary btn-sm">Edit Profile</a>
+                    {{-- @dd($routePrefix) --}}
+                    @if(isset($routePrefix))
+                    <a href="{{route($routePrefix.'clients.edit',$client->id)}}" class="btn btn-primary btn-sm">Edit Profile</a>
+                    @endif
                 </div>
             </div>
         </div>

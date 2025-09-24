@@ -12,7 +12,8 @@ class ClientController extends CrudController
     public function __construct()
     {
         $this->model = Client::class;
-        $this->routePrefix = 'clients';
+        $this->routePrefix = auth()->user()->role=="client" ? 'my-clients':'clients';
+
         $this->columns = ['id', 'client_name', 'address', 'nik', 'phone', 'created_at', 'updated_at'];
     }
     
@@ -93,7 +94,7 @@ class ClientController extends CrudController
             'record' => $client,
             'title' => $title,
             'columns' => ['client_name', 'address', 'nik', 'phone'],
-            'updateRoute' => route('clients.update', $client->id),
+            'updateRoute' => route( $this->routePrefix.'.update',  $client->id),
         ]);
     }
 
@@ -113,7 +114,7 @@ class ClientController extends CrudController
         $client = Client::findOrFail($id);
         $client->update($request->all());
 
-        return redirect()->route('clients.index')
+        return redirect()->route(auth()->user()->role=="client" ? 'client.dashboard' :'clients.index')
             ->with('success', 'Client updated successfully.');
     }
 

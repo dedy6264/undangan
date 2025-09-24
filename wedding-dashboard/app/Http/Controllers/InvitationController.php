@@ -31,7 +31,7 @@ class InvitationController extends CrudController
         return view('invitations.index', [
             'invitations' => $invitations,
             'title' => $title,
-             'createRoute' => route($this->routePrefix.'.create'),
+            'createRoute' => route($this->routePrefix.'.create'),
             'editRoute' => $this->routePrefix.'.edit',
             'showRoute' => $this->routePrefix.'.show',
             'deleteRoute' => $this->routePrefix.'.destroy',

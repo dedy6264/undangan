@@ -13,7 +13,7 @@ class LocationController extends CrudController
     public function __construct()
     {
         $this->model = Location::class;
-        $this->routePrefix = 'locations';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-locations':'locations';
         $this->columns = ['id', 'wedding_event_id', 'venue_name', 'address', 'map_embed_url', 'created_at', 'updated_at'];
     }
     
@@ -28,6 +28,10 @@ class LocationController extends CrudController
         return view('locations.index', [
             'locations' => $locations,
             'title' => $title,
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -41,8 +45,9 @@ class LocationController extends CrudController
         
         return view('locations.create', [
             'title' => $title,
-            'storeRoute' => route('locations.store'),
             'weddingEvents' => $weddingEvents,
+             'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -60,7 +65,7 @@ class LocationController extends CrudController
 
         Location::create($request->all());
 
-        return redirect()->route('locations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Location created successfully.');
     }
 
@@ -75,7 +80,8 @@ class LocationController extends CrudController
         return view('locations.show', [
             'location' => $location,
             'title' => $title,
-        ]);
+              'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit']);
     }
 
     /**
@@ -90,8 +96,9 @@ class LocationController extends CrudController
         return view('locations.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('locations.update', $record->id),
             'weddingEvents' => $weddingEvents,
+               'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update', $record->id),
         ]);
     }
 
@@ -110,7 +117,7 @@ class LocationController extends CrudController
         $record = Location::findOrFail($id);
         $record->update($request->all());
 
-        return redirect()->route('locations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Location updated successfully.');
     }
 
@@ -122,7 +129,7 @@ class LocationController extends CrudController
         $record = Location::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('locations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Location deleted successfully.');
     }
 }

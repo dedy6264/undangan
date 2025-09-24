@@ -95,6 +95,7 @@ Route::middleware(['auth', 'client'])->group(function () {
     Route::get('/client/dashboard', [DashboardController::class, 'clientIndex'])->name('client.dashboard');
     
     // Client-specific routes with full CRUD operations
+    Route::resource('my-clients', ClientController::class)->only('edit','update');
     Route::resource('my-couples', CoupleController::class);
     Route::get('my-couples/{couple}/select-payment', [CoupleController::class, 'selectPayment'])->name('my-couples.select-payment');
     Route::post('my-couples/{couple}/process-payment', [CoupleController::class, 'processPayment'])->name('my-couples.process-payment');

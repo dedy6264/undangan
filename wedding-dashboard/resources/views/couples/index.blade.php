@@ -6,11 +6,12 @@
 <!-- Page Heading -->
 <div class="mb-4 d-sm-flex align-items-center justify-content-between">
     <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'Couples' }}</h1>
-    @if (isset($createRoute))
-        <a href="{{ $createRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary">
+    {{-- @if (isset($createRoute)) --}}
+        <a href="{{ route('create-order.step1') }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary">
+        {{-- <a href="{{ $createRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary"> --}}
             <i class="fas fa-plus fa-sm text-white-50"></i> Add New Couple
         </a>
-    @endif
+    {{-- @endif --}}
 </div>
 
 <!-- Content Row -->
@@ -71,16 +72,18 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             @endif
-                                            @if (isset($deleteRoute))
-                                                <form action="{{ route($deleteRoute, $record->id) }}" method="POST" 
-                                                    style="display: inline-block;"
-                                                    onsubmit="return confirm('Are you sure you want to delete this couple?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                            @if($record->transactions->first()->status !== 'paid') 
+                                                @if (isset($deleteRoute))
+                                                    <form action="{{ route($deleteRoute, $record->id) }}" method="POST" 
+                                                        style="display: inline-block;"
+                                                        onsubmit="return confirm('Are you sure you want to delete this couple?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>

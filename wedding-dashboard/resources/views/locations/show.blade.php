@@ -4,23 +4,27 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'View Location' }}</h1>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'View Location' }}</h1>
     <div>
-        <a href="{{ route('locations.edit', $location) }}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
+        @if(isset($editRoute))
+        <a href="{{ $editRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-warning">
             <i class="fas fa-edit fa-sm text-white-50"></i> Edit
         </a>
-        <a href="{{ route('locations.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+        @endif
+        @if(isset($indexRoute))
+        <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Locations
         </a>
+        @endif
     </div>
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Location Details' }}</h6>
             </div>
             <div class="card-body">

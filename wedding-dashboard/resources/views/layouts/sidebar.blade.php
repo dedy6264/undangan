@@ -60,9 +60,16 @@
                 <a class="collapse-item {{ request()->routeIs('people.*') ? 'active' : '' }}" href="{{ route('people.index') }}">People</a>
                 <a class="collapse-item {{ request()->routeIs('wedding-events.*') ? 'active' : '' }}" href="{{ route('wedding-events.index') }}">Wedding Events</a>
                 <a class="collapse-item {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}">Locations</a>
+                <a class="collapse-item {{ request()->routeIs('gallery-images.*') ? 'active' : '' }}" href="{{ route('gallery-images.index') }}">Gallery Images</a>
+                <a class="collapse-item {{ request()->routeIs('timeline-events.*') ? 'active' : '' }}" href="{{ route('timeline-events.index') }}">Timeline Events</a>
+                <a class="collapse-item {{ request()->routeIs('bank-accounts.*') ? 'active' : '' }}" href="{{ route('bank-accounts.index') }}">Bank Accounts</a>
+                <a class="collapse-item {{ request()->routeIs('guests.*') ? 'active' : '' }}" href="{{ route('guests.index') }}">Guests</a>
+                <a class="collapse-item {{ request()->routeIs('invitations.*') ? 'active' : '' }}" href="{{ route('invitations.index') }}">Invitations</a>
+                <a class="collapse-item {{ request()->routeIs('guest-messages.*') ? 'active' : '' }}" href="{{ route('guest-messages.index') }}">Guest Messages</a>
                 @else
                 <a class="collapse-item {{ request()->routeIs('my-couples.*') ? 'active' : '' }}" href="{{ route('my-couples.index') }}">My Couples</a>
                 <a class="collapse-item {{ request()->routeIs('my-wedding-events.*') ? 'active' : '' }}" href="{{ route('my-wedding-events.index') }}">My Events</a>
+                <a class="collapse-item {{ request()->routeIs('my-locations.*') ? 'active' : '' }}" href="{{ route('my-locations.index') }}">Locations</a>
                 <a class="collapse-item {{ request()->routeIs('my-gallery-images.*') ? 'active' : '' }}" href="{{ route('my-gallery-images.index') }}">Gallery Images</a>
                 <a class="collapse-item {{ request()->routeIs('my-timeline-events.*') ? 'active' : '' }}" href="{{ route('my-timeline-events.index') }}">Timeline Events</a>
                 <a class="collapse-item {{ request()->routeIs('my-bank-accounts.*') ? 'active' : '' }}" href="{{ route('my-bank-accounts.index') }}">Bank Accounts</a>
@@ -88,11 +95,11 @@
                 @endif
                 <a class="collapse-item {{ request()->routeIs('create-order.*') ? 'active' : '' }}" href="{{ route('create-order.step1') }}">Create Order</a>
                 @if(auth()->user()->role=="admin")
-                <a class="collapse-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}" href="{{ route('transactions.index') }}">Transactions</a>
+                <a class="collapse-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}" href="{{ route('transactions.index') }}">Invoice</a>
                 <a class="collapse-item {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}" href="{{ route('payment-methods.index') }}">Payment Methods</a>
-                <a class="collapse-item {{ request()->routeIs('payment-transactions.*') ? 'active' : '' }}" href="{{ route('payment-transactions.index') }}">Payment Transactions</a>
+                <a class="collapse-item {{ request()->routeIs('payment-transactions.*') ? 'active' : '' }}" href="{{ route('payment-transactions.index') }}">Payment Invoice</a>
                 @else
-                <a class="collapse-item {{ request()->routeIs('my-transactions.*') ? 'active' : '' }}" href="{{ route('my-transactions.index') }}">My Transactions</a>
+                <a class="collapse-item {{ request()->routeIs('my-transactions.*') ? 'active' : '' }}" href="{{ route('my-transactions.index') }}">My Invoice</a>
                 @endif
             </div>
         </div>

@@ -66,7 +66,7 @@ class BankAccountController extends CrudController
 
         BankAccount::create($request->all());
 
-        return redirect()->route($this->routePrefix.'index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Bank Account created successfully.');
     }
 
@@ -120,7 +120,7 @@ class BankAccountController extends CrudController
         $record = BankAccount::findOrFail($id);
         $record->update($request->all());
 
-        return redirect()->route($this->routePrefix.'index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Bank Account updated successfully.');
     }
 
@@ -132,7 +132,7 @@ class BankAccountController extends CrudController
         $record = BankAccount::findOrFail($id);
         $record->delete();
 
-        return redirect()->route($this->routePrefix.'index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Bank Account deleted successfully.');
     }
 }

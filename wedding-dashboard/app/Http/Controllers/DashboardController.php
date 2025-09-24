@@ -13,6 +13,10 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+     public function __construct()
+    {
+        $this->routePrefix =  'my-';
+    }
     public function index(Request $request): View
     {
         // Get the authenticated user
@@ -31,7 +35,7 @@ class DashboardController extends Controller
         
         $recentClients = Client::latest()->take(5)->get();
         $recentEvents = WeddingEvent::with('couple')->latest()->take(5)->get();
-        
+       
         return view('admin.dashboard-new', compact(
             'clientCount',
             'coupleCount',
@@ -56,11 +60,12 @@ class DashboardController extends Controller
         // Get wedding events for these couples
         $coupleIds = $couples->pluck('id');
         $events = WeddingEvent::whereIn('couple_id', $coupleIds)->get();
-        
+         $routePrefix=$this->routePrefix;
         return view('clients.dashboard-new', compact(
             'client',
             'couples',
-            'events'
+            'events',
+            'routePrefix'
         ));
     }
 }
