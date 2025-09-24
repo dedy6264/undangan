@@ -50,12 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/create-order/step3', [OrderController::class, 'processStep3'])->name('create-order.process-step3');
     Route::get('/create-order/step4', [OrderController::class, 'step4'])->name('create-order.step4');
     Route::post('/create-order/step4', [OrderController::class, 'processStep4'])->name('create-order.process-step4');
-    Route::get('/create-order/step5', [OrderController::class, 'step5'])->name('create-order.step5');
-    Route::post('/create-order/step5', [OrderController::class, 'processStep5'])->name('create-order.process-step5');
-    Route::get('/create-order/step6', [OrderController::class, 'step6'])->name('create-order.step6');
-    Route::post('/create-order/step6', [OrderController::class, 'processStep6'])->name('create-order.process-step6');
-    Route::get('/create-order/step7', [OrderController::class, 'step7'])->name('create-order.step7');
-    Route::post('/create-order/step7', [OrderController::class, 'processStep7'])->name('create-order.process-step7');
     Route::post('/create-order/cancel', [OrderController::class, 'cancel'])->name('create-order.cancel');
 });
 

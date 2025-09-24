@@ -29,8 +29,12 @@ class CoupleController extends CrudController
      */
     public function index(): View
     {
-
-        $records = Couple::with('client')->latest()->paginate(10);
+        // Get couples with their client and latest transaction
+        $records = Couple::with(['client', 'transactions' => function($query) {
+                $query->latest()->limit(1);
+            }])
+            ->latest()
+            ->paginate(10);
         $title = 'Couples';
         
         return view('couples.index', [
@@ -163,10 +167,14 @@ class CoupleController extends CrudController
 
         DB::beginTransaction();
         try {
+            // Generate a unique reference number
+            $referenceNo = Transaction::generateReferenceNo();
+            
             // Create transaction
             $transaction = Transaction::create([
                 'couple_id' => $couple->id,
                 'package_id' => $package->id,
+                'reference_no' => $referenceNo,
                 'status' => 'pending', // Default status, will update based on payment method
                 'total_amount' => $totalAmount,
             ]);

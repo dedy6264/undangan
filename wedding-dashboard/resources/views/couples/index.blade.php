@@ -30,6 +30,8 @@
                                     <th>Groom Name</th>
                                     <th>Bride Name</th>
                                     <th>Wedding Date</th>
+                                    <th>Transaction Status</th>
+                                    <th>Reference No</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -40,6 +42,29 @@
                                         <td>{{ $record->groom_name ?? 'N/A' }}</td>
                                         <td>{{ $record->bride_name ?? 'N/A' }}</td>
                                         <td>{{ $record->wedding_date ?? 'N/A' }}</td>
+                                        <td>
+                                            @if($record->transactions->first())
+                                                <span class="transaction-status 
+                                                    @if($record->transactions->first()->status === 'paid') 
+                                                        badge-success 
+                                                    @elseif($record->transactions->first()->status === 'pending') 
+                                                        badge-warning 
+                                                    @elseif($record->transactions->first()->status === 'cancelled') 
+                                                        badge-secondary 
+                                                    @elseif($record->transactions->first()->status === 'expired') 
+                                                        badge-danger 
+                                                    @else 
+                                                        badge-info 
+                                                    @endif">
+                                                    {{ ucfirst($record->transactions->first()->status) }}
+                                                </span>
+                                            @else
+                                                <span class="transaction-status badge-light">No Transaction</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ $record->transactions->first() ? $record->transactions->first()->reference_no : 'N/A' }}
+                                        </td>
                                         <td>
                                             @if (isset($editRoute))
                                                 <a href="{{ route($editRoute, $record->id) }}" class="btn btn-sm btn-primary">
@@ -87,4 +112,19 @@
 @section('styles')
 <!-- Custom styles for this page -->
 <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+
+<style>
+    .transaction-status {
+        font-size: 0.85em;
+        padding: 0.25em 0.6em;
+        border-radius: 0.375rem;
+        font-weight: 500;
+    }
+    .badge-success { background-color: #28a745; }
+    .badge-warning { background-color: #ffc107; color: #212529; }
+    .badge-info { background-color: #17a2b8; }
+    .badge-danger { background-color: #dc3545; }
+    .badge-secondary { background-color: #6c757d; }
+    .badge-light { background-color: #f8f9fa; color: #212529; }
+</style>
 @endsection

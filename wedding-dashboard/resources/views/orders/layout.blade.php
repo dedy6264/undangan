@@ -33,10 +33,7 @@
                             <div class="step {{ request()->routeIs('create-order.step1') ? 'active' : '' }}">1. Package</div>
                             <div class="step {{ request()->routeIs('create-order.step2') ? 'active' : '' }}">2. Client</div>
                             <div class="step {{ request()->routeIs('create-order.step3') ? 'active' : '' }}">3. Couple</div>
-                            <div class="step {{ request()->routeIs('create-order.step4') ? 'active' : '' }}">4. People</div>
-                            <div class="step {{ request()->routeIs('create-order.step5') ? 'active' : '' }}">5. Event</div>
-                            <div class="step {{ request()->routeIs('create-order.step6') ? 'active' : '' }}">6. Location</div>
-                            <div class="step {{ request()->routeIs('create-order.step7') ? 'active' : '' }}">7. Payment</div>
+                            <div class="step {{ request()->routeIs('create-order.step4') ? 'active' : '' }}">4. Payment</div>
                         </div>
                     </div>
                 </div>

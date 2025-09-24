@@ -47,7 +47,7 @@
             </div>
             
             <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Continue to People Information</button>
+                <button type="submit" class="btn btn-primary">Continue to Payment</button>
                 <a href="{{ route('create-order.step2') }}" class="btn btn-secondary">Back</a>
             </div>
         </div>
