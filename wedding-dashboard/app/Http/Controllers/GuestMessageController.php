@@ -14,7 +14,7 @@ class GuestMessageController extends CrudController
     public function __construct()
     {
         $this->model = GuestMessage::class;
-        $this->routePrefix = 'guest-messages';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-guest-messages':'guest-messages';
         $this->columns = ['id', 'guest_id', 'wedding_event_id', 'guest_name', 'message', 'is_approved', 'created_at', 'updated_at'];
     }
     
@@ -30,9 +30,10 @@ class GuestMessageController extends CrudController
             'records' => $records,
             'title' => $title,
             'columns' => ['guest_id', 'wedding_event_id', 'guest_name', 'message', 'is_approved'],
-            'createRoute' => route('guest-messages.create'),
-            'editRoute' => 'guest-messages.edit',
-            'deleteRoute' => 'guest-messages.destroy',
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -48,9 +49,10 @@ class GuestMessageController extends CrudController
         return view('admin.crud.create', [
             'title' => $title,
             'columns' => ['guest_id', 'wedding_event_id', 'guest_name', 'message', 'is_approved'],
-            'storeRoute' => route('guest-messages.store'),
             'guests' => $guests,
             'weddingEvents' => $weddingEvents,
+            'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -69,7 +71,7 @@ class GuestMessageController extends CrudController
 
         GuestMessage::create($request->all());
 
-        return redirect()->route('guest-messages.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest Message created successfully.');
     }
 
@@ -84,6 +86,8 @@ class GuestMessageController extends CrudController
         return view('admin.crud.show', [
             'record' => $record,
             'title' => $title,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
             'columns' => ['guest_id', 'wedding_event_id', 'guest_name', 'message', 'is_approved', 'created_at', 'updated_at'],
         ]);
     }
@@ -102,9 +106,10 @@ class GuestMessageController extends CrudController
             'record' => $record,
             'title' => $title,
             'columns' => ['guest_id', 'wedding_event_id', 'guest_name', 'message', 'is_approved'],
-            'updateRoute' => route('guest-messages.update', $record->id),
             'guests' => $guests,
             'weddingEvents' => $weddingEvents,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update', $record->id),
         ]);
     }
 
@@ -124,7 +129,7 @@ class GuestMessageController extends CrudController
         $record = GuestMessage::findOrFail($id);
         $record->update($request->all());
 
-        return redirect()->route('guest-messages.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest Message updated successfully.');
     }
 
@@ -136,7 +141,7 @@ class GuestMessageController extends CrudController
         $record = GuestMessage::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('guest-messages.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest Message deleted successfully.');
     }
 }

@@ -13,7 +13,7 @@ class BankAccountController extends CrudController
     public function __construct()
     {
         $this->model = BankAccount::class;
-        $this->routePrefix = 'bank-accounts';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-bank-accounts':'bank-accounts';
         $this->columns = ['id', 'wedding_event_id', 'bank_name', 'account_number', 'account_holder_name', 'is_active', 'created_at', 'updated_at'];
     }
     
@@ -28,6 +28,10 @@ class BankAccountController extends CrudController
         return view('bank_accounts.index', [
             'bankAccounts' => $bankAccounts,
             'title' => $title,
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -41,8 +45,9 @@ class BankAccountController extends CrudController
         
         return view('bank_accounts.create', [
             'title' => $title,
-            'storeRoute' => route('bank-accounts.store'),
             'weddingEvents' => $weddingEvents,
+            'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -61,7 +66,7 @@ class BankAccountController extends CrudController
 
         BankAccount::create($request->all());
 
-        return redirect()->route('bank-accounts.index')
+        return redirect()->route($this->routePrefix.'index')
             ->with('success', 'Bank Account created successfully.');
     }
 
@@ -76,6 +81,8 @@ class BankAccountController extends CrudController
         return view('bank_accounts.show', [
             'bankAccount' => $bankAccount,
             'title' => $title,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
         ]);
     }
 
@@ -91,8 +98,9 @@ class BankAccountController extends CrudController
         return view('bank_accounts.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('bank-accounts.update', $record->id),
             'weddingEvents' => $weddingEvents,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update',$record->id),
         ]);
     }
 
@@ -112,7 +120,7 @@ class BankAccountController extends CrudController
         $record = BankAccount::findOrFail($id);
         $record->update($request->all());
 
-        return redirect()->route('bank-accounts.index')
+        return redirect()->route($this->routePrefix.'index')
             ->with('success', 'Bank Account updated successfully.');
     }
 
@@ -124,7 +132,7 @@ class BankAccountController extends CrudController
         $record = BankAccount::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('bank-accounts.index')
+        return redirect()->route($this->routePrefix.'index')
             ->with('success', 'Bank Account deleted successfully.');
     }
 }

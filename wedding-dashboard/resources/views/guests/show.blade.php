@@ -4,18 +4,20 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'View Guest' }}</h1>
-    <a href="{{ route('guests.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'View Guest' }}</h1>
+    @if(isset($indexRoute))
+    <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
         <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Guests
     </a>
+    @endif
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'View Guest' }}</h6>
             </div>
             <div class="card-body">
@@ -53,19 +55,22 @@
                         </table>
                     </div>
                 </div>
-                
-                <a href="{{ route('guests.edit', $guest) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Edit Guest
-                </a>
-                <a href="{{ route('guests.index') }}" class="btn btn-secondary">Back to List</a>
-                
-                <form action="{{ route('guests.destroy', $guest) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this guest?');">
+                @if(isset($editRoute))
+                <a href="{{ route($editRoute, $guest) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Guest</a>
+                @endif
+                @if(isset($indexRoute))
+                <a href="{{ $indexRoute }}" class="btn btn-secondary">Back to List</a>
+                @endif
+                @if(isset($destroyRoute))
+                <form action="{{ route($destroyRoute, $guest) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this guest?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Delete Guest
                     </button>
                 </form>
+                @endif
             </div>
         </div>
     </div>

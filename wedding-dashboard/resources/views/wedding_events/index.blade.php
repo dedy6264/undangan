@@ -4,17 +4,19 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Wedding Events</h1>
-    <a href="{{ route('wedding-events.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Add New Wedding Event
-    </a>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">Wedding Events</h1>
+    @if (isset($createRoute))
+        <a href="{{ $createRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Wedding Event
+        </a>
+        @endif
 </div>
 
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Wedding Events List</h6>
             </div>
             <div class="card-body">
@@ -40,19 +42,25 @@
                                         <td>{{ $weddingEvent->event_time ?? 'N/A' }}</td>
                                         <td>{{ $weddingEvent->end_time ?? 'N/A' }}</td>
                                         <td>
-                                            <a href="{{ route('wedding-events.show', $weddingEvent) }}" class="btn btn-sm btn-info">
+                                             @if (isset($showRoute))
+                                            <a href="{{ route($showRoute, $weddingEvent) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('wedding-events.edit', $weddingEvent) }}" class="btn btn-sm btn-primary">
+                                            @endif
+                                             @if (isset($editRoute))
+                                            <a href="{{ route($editRoute, $weddingEvent) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('wedding-events.destroy', $weddingEvent) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this wedding event?');">
+                                            @endif
+                                             @if (isset($deleteRoute))
+                                            <form action="{{ route($deleteRoute, $weddingEvent) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this wedding event?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

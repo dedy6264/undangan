@@ -13,7 +13,7 @@ class GuestController extends CrudController
     public function __construct()
     {
         $this->model = Guest::class;
-        $this->routePrefix = 'guests';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-guests':'guests';
         $this->columns = ['id', 'couple_id', 'name', 'email', 'phone', 'guest_index', 'created_at', 'updated_at'];
     }
     
@@ -28,6 +28,10 @@ class GuestController extends CrudController
         return view('guests.index', [
             'guests' => $guests,
             'title' => $title,
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -41,8 +45,9 @@ class GuestController extends CrudController
         
         return view('guests.create', [
             'title' => $title,
-            'storeRoute' => route('guests.store'),
             'couples' => $couples,
+            'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -72,7 +77,7 @@ class GuestController extends CrudController
             'guest_index' => $guestIndex,
         ]);
 
-        return redirect()->route('guests.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest created successfully.');
     }
 
@@ -87,6 +92,8 @@ class GuestController extends CrudController
         return view('guests.show', [
             'guest' => $guest,
             'title' => $title,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
         ]);
     }
 
@@ -102,8 +109,9 @@ class GuestController extends CrudController
         return view('guests.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('guests.update', $record->id),
             'couples' => $couples,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update',  $record->id),
         ]);
     }
 
@@ -135,7 +143,7 @@ class GuestController extends CrudController
             'guest_index' => $guestIndex,
         ]);
 
-        return redirect()->route('guests.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest updated successfully.');
     }
 
@@ -147,7 +155,7 @@ class GuestController extends CrudController
         $record = Guest::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('guests.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest deleted successfully.');
     }
 }

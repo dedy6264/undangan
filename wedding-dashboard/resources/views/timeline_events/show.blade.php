@@ -7,12 +7,16 @@
 <div class="mb-4 d-sm-flex align-items-center justify-content-between">
     <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'View Timeline Event' }}</h1>
     <div>
-        <a href="{{ route('timeline-events.edit', $timelineEvent) }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-warning">
+        @if(isset($editRoute))
+        <a href="{{ route($editRoute, $timelineEvent) }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-warning">
             <i class="fas fa-edit fa-sm text-white-50"></i> Edit
         </a>
-        <a href="{{ route('timeline-events.index') }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
+        @endif
+        @if(isset($indexRoute))
+        <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Timeline Events
         </a>
+        @endif
     </div>
 </div>
 

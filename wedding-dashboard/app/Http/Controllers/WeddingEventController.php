@@ -14,6 +14,8 @@ class WeddingEventController extends CrudController
     {
         $this->model = WeddingEvent::class;
         $this->routePrefix = auth()->user()->role=="client" ?'my-wedding-events':'wedding-events';
+        $this->locationRoutePrefix = auth()->user()->role=="client" ?'my-locations':'locations';
+        $this->galleryRoutePrefix = auth()->user()->role=="client" ?'my-gallery-images':'gallery-images';
         $this->columns = ['id', 'couple_id', 'event_name', 'event_date', 'event_time', 'end_time', 'created_at', 'updated_at'];
     }
     
@@ -35,9 +37,13 @@ class WeddingEventController extends CrudController
         
         $title = 'Wedding Events';
         
-        return view('wedding-events.index', [
+        return view('wedding_events.index', [
             'weddingEvents' => $weddingEvents,
             'title' => $title,
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -50,9 +56,11 @@ class WeddingEventController extends CrudController
         $couples = Couple::with('client')->get();
         
         // Using custom view instead of admin.crud.create
-        return view('wedding-events..create', [
+        return view('wedding_events.create', [
             'title' => $title,
             'couples' => $couples,
+            'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -95,9 +103,13 @@ class WeddingEventController extends CrudController
         
         $title = 'View Wedding Event';
         
-        return view('wedding-events.show', [
+        return view('wedding_events.show', [
             'weddingEvent' => $weddingEvent,
             'title' => $title,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'locationRoute' => $this->locationRoutePrefix,
+            'galleryImageRoute' => $this->galleryImageRoutePrefix,
         ]);
     }
 
@@ -111,10 +123,12 @@ class WeddingEventController extends CrudController
         $couples = Couple::with('client')->get();
         
         // Using custom view instead of admin.crud.edit
-        return view('wedding-events.edit', [
+        return view('wedding_events.edit', [
             'record' => $weddingEvent,
             'title' => $title,
             'couples' => $couples,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update', $weddingEvent->id),
         ]);
     }
 

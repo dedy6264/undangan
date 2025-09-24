@@ -4,18 +4,20 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'View Invitation' }}</h1>
-    <a href="{{ route('invitations.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'View Invitation' }}</h1>
+    @if(isset($indexRoute))
+    <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
         <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Invitations
     </a>
+    @endif
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'View Invitation' }}</h6>
             </div>
             <div class="card-body">
@@ -61,38 +63,41 @@
                         </table>
                     </div>
                 </div>
-                
-                <a href="{{ route('invitations.edit', $invitation) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Edit Invitation
-                </a>
-                <a href="{{ route('invitations.index') }}" class="btn btn-secondary">Back to List</a>
-                
-                <form action="{{ route('invitations.destroy', $invitation) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
+                @if(isset($editRoute))
+                <a href="{{ route($editRoute, $invitation) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Invitation</a>
+                    @endif
+                @if(isset($indexRoute))
+                <a href="{{ $indexRoute }}" class="btn btn-secondary">Back to List</a>
+                @endif
+                @if(isset($destroyRoute))
+                <form action="{{ route($destroyRoute, $invitation) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Delete Invitation
                     </button>
                 </form>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
 <!-- Invitation Card Section -->
-<div class="row mt-4">
+<div class="mt-4 row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Invitation Card</h6>
             </div>
             <div class="card-body">
                 @if($invitation->qrCode)
                     <div class="invitation-card-detail">
                         <div class="row">
-                            <div class="col-md-5 text-center">
+                            <div class="text-center col-md-5">
                                 <div class="qr-section">
-                                    <h6 class="text-center mb-3">QR Code</h6>
+                                    <h6 class="mb-3 text-center">QR Code</h6>
                                     @if($invitation->qrCode->qr_image_url)
                                         @if(pathinfo($invitation->qrCode->qr_image_url, PATHINFO_EXTENSION) === 'svg')
                                             <!-- Display SVG directly -->
@@ -114,7 +119,7 @@
                                             </div>
                                         @endif
                                     @else
-                                        <div class="bg-light border rounded p-3 text-center">
+                                        <div class="p-3 text-center border rounded bg-light">
                                             <span>No QR Code</span>
                                         </div>
                                     @endif
@@ -122,40 +127,40 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="details-section">
-                                    <h6 class="text-center mb-3">Invitation Details</h6>
-                                    <div class="detail-item mb-2">
+                                    <h6 class="mb-3 text-center">Invitation Details</h6>
+                                    <div class="mb-2 detail-item">
                                         <strong>Guest:</strong> 
                                         <span>{{ $invitation->guest->name ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Guest Email:</strong> 
                                         <span>{{ $invitation->guest->email ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Guest Phone:</strong> 
                                         <span>{{ $invitation->guest->phone ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Couple:</strong> 
                                         <span>{{ $invitation->weddingEvent->couple->groom_name ?? '' }} & {{ $invitation->weddingEvent->couple->bride_name ?? '' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Event:</strong> 
                                         <span>{{ $invitation->weddingEvent->event_name ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Date:</strong> 
                                         <span>{{ $invitation->weddingEvent->event_date ? $invitation->weddingEvent->event_date->format('d M Y') : 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Time:</strong> 
                                         <span>{{ $invitation->weddingEvent->event_time ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>End Time:</strong> 
                                         <span>{{ $invitation->weddingEvent->end_time ?? 'N/A' }}</span>
                                     </div>
-                                    <div class="detail-item mb-2">
+                                    <div class="mb-2 detail-item">
                                         <strong>Location:</strong> 
                                         <span>{{ $invitation->weddingEvent->location->venue_name ?? 'N/A' }}</span>
                                     </div>

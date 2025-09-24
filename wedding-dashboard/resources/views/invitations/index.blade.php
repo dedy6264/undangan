@@ -4,17 +4,19 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'Invitations' }}</h1>
-    <a href="{{ route('invitations.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'Invitations' }}</h1>
+    @if(isset($createRoute))
+    <a href="{{ $createRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary">
         <i class="fas fa-plus fa-sm text-white-50"></i> Add New Invitation
     </a>
+    @endif
 </div>
 
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Invitations' }} List</h6>
             </div>
             <div class="card-body">

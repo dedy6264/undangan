@@ -3,11 +3,15 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
             <h1>Couple Details</h1>
             <div>
-                <a href="{{ route('couples.edit', $couple) }}" class="btn btn-warning">Edit</a>
-                <a href="{{ route('couples.index') }}" class="btn btn-secondary">Back to Couples</a>
+                @if(isset($editRoute))
+                <a href="{{ route($editRoute, $couple) }}" class="btn btn-warning">Edit</a>
+                @endif
+                @if(isset($indexRoute))
+                <a href="{{ $indexRoute }}" class="btn btn-secondary">Back to Couples</a>
+                @endif
             </div>
         </div>
 

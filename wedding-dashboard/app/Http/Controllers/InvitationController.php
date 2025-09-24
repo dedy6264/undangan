@@ -16,7 +16,7 @@ class InvitationController extends CrudController
     public function __construct()
     {
         $this->model = Invitation::class;
-        $this->routePrefix = 'invitations';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-invitations':'invitations';
         $this->columns = ['id', 'guest_id', 'wedding_event_id', 'invitation_code', 'is_attending', 'responded_at', 'created_at', 'updated_at'];
     }
     
@@ -31,6 +31,10 @@ class InvitationController extends CrudController
         return view('invitations.index', [
             'invitations' => $invitations,
             'title' => $title,
+             'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -45,9 +49,10 @@ class InvitationController extends CrudController
         
         return view('invitations.create', [
             'title' => $title,
-            'storeRoute' => route('invitations.store'),
             'guests' => $guests,
             'weddingEvents' => $weddingEvents,
+             'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -68,7 +73,7 @@ class InvitationController extends CrudController
         $invitation = Invitation::create($request->all());
 
         // Generate QR code data (using invitation code as the data)
-        $qrData = route('invitations.show', $invitation->id);
+        $qrData = route($this->routePrefix.'.show', $invitation->id);
         
         // Generate QR code image in SVG format (doesn't require imagick)
         $qrImage = QrCodeGenerator::format('svg')->size(300)->generate($qrData);
@@ -92,7 +97,7 @@ class InvitationController extends CrudController
             'qr_image_url' => $qrImageName,
         ]);
 
-        return redirect()->route('invitations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Invitation created successfully with QR code.');
     }
 
@@ -107,6 +112,8 @@ class InvitationController extends CrudController
         return view('invitations.show', [
             'invitation' => $invitation,
             'title' => $title,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
         ]);
     }
 
@@ -123,9 +130,10 @@ class InvitationController extends CrudController
         return view('invitations.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('invitations.update', $record->id),
             'guests' => $guests,
             'weddingEvents' => $weddingEvents,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update', $record->id),
         ]);
     }
 
@@ -146,7 +154,7 @@ class InvitationController extends CrudController
 
         $record->update($request->all());
 
-        return redirect()->route('invitations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Invitation updated successfully.');
     }
 
@@ -158,7 +166,7 @@ class InvitationController extends CrudController
         $record = Invitation::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('invitations.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Invitation deleted successfully.');
     }
 }

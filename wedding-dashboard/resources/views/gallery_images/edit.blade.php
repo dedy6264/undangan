@@ -4,26 +4,29 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'Edit Gallery Image' }}</h1>
-    <a href="{{ route('gallery-images.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'Edit Gallery Image' }}</h1>
+    @if(isset($indexRoute))
+    <a href="{{ $indexRoute }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
         <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Gallery Images
     </a>
+    @endif
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Edit Gallery Image' }}</h6>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ $updateRoute ?? route('gallery-images.update', $record->id) }}" enctype="multipart/form-data">
+                @if(isset($updateRoute))
+                <form method="POST" action="{{ $updateRoute}}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="wedding_event_id" class="form-label">Wedding Event <span class="text-danger">*</span></label>
                         <select name="wedding_event_id" id="wedding_event_id" class="form-control" required>
                             <option value="">Select Wedding Event</option>
@@ -40,7 +43,7 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="image" class="form-label">Image</label>
                         <input type="file" name="image" id="image" class="form-control" accept="image/*">
                         <small class="form-text text-muted">Upload a new image (JPG, PNG, GIF) - Max 2MB</small>
@@ -58,7 +61,7 @@
                         @endif
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="description" class="form-label">Description</label>
                         <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $record->description) }}</textarea>
                         @error('description')
@@ -66,7 +69,7 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="sort_order" class="form-label">Sort Order</label>
                         <input type="number" name="sort_order" id="sort_order" class="form-control" value="{{ old('sort_order', $record->sort_order) }}" min="0">
                         @error('sort_order')
@@ -77,8 +80,11 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Update Gallery Image
                     </button>
-                    <a href="{{ route('gallery-images.index') }}" class="btn btn-secondary">Cancel</a>
+                    @if(isset($indexRoute))
+                    <a href="{{ $indexRoute }}" class="btn btn-secondary">Cancel</a>
+                    @endif
                 </form>
+                @endif
             </div>
         </div>
     </div>

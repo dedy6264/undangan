@@ -34,11 +34,15 @@ class GalleryImageController extends CrudController
         $title = 'Gallery Images';
         $weddingEvents = WeddingEvent::with('couple')->get();
         
-        return view( 'gallery-images.index', [
+        return view( 'gallery_images.index', [
             'galleryImages' => $galleryImages,
             'title' => $title,
             'weddingEvents' => $weddingEvents,
             'selectedWeddingEventId' => $request->wedding_event_id ?? null,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'createRoute' => $this->routePrefix.'.create',
+            'editRoute' => $this->routePrefix.'.edit',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -50,9 +54,10 @@ class GalleryImageController extends CrudController
         $title = 'Create Gallery Image';
         $weddingEvents = WeddingEvent::with('couple')->get();
         
-        return view( 'gallery-images.create', [
+        return view( 'gallery_images.create', [
             'title' => $title,
-            'storeRoute' =>auth()->user()->role=="client" ? route('my-gallery-images.store'): route('gallery-images.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'storeRoute' => route($this->routePrefix.'.store'),
             'weddingEvents' => $weddingEvents,
         ]);
     }
@@ -106,9 +111,11 @@ class GalleryImageController extends CrudController
         $galleryImage = GalleryImage::with('weddingEvent.couple')->findOrFail($id);
         $title = 'View Gallery Image';
         
-        return view( 'gallery-images.show', [
+        return view( 'gallery_images.show', [
             'galleryImage' => $galleryImage,
             'title' => $title,
+            'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
         ]);
     }
 
@@ -125,6 +132,7 @@ class GalleryImageController extends CrudController
             'record' => $record,
             'title' => $title,
             'updateRoute' => route( $this->routePrefix.'.update', $record->id),
+            'indexRoute' => route($this->routePrefix.'.index'),
             'weddingEvents' => $weddingEvents,
         ]);
     }

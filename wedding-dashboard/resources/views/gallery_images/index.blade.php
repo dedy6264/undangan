@@ -4,22 +4,25 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">{{ $title ?? 'Gallery Images' }}</h1>
-    <a href="{{ route('gallery-images.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">{{ $title ?? 'Gallery Images' }}</h1>
+    @if(isset($createRoute))
+    <a href="{{ route($createRoute) }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-primary">
         <i class="fas fa-plus fa-sm text-white-50"></i> Add New Gallery Image
     </a>
+    @endif
 </div>
 
 <!-- Filter Form -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Filter Gallery Images</h6>
             </div>
             <div class="card-body">
-                <form method="GET" action="{{ route('gallery-images.index') }}">
+                @if(isset($indexRoute))
+                <form method="GET" action="{{ $indexRoute }}">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -38,12 +41,13 @@
                             <div class="form-group d-flex align-items-end h-100">
                                 <div>
                                     <button type="submit" class="btn btn-primary">Filter</button>
-                                    <a href="{{ route('gallery-images.index') }}" class="btn btn-secondary">Clear</a>
+                                    <a href="{{ $indexRoute }}" class="btn btn-secondary">Clear</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
+                @endif
             </div>
         </div>
     </div>
@@ -52,8 +56,8 @@
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">{{ $title ?? 'Gallery Images' }} List</h6>
                 @if(isset($selectedWeddingEventId) && $selectedWeddingEventId)
                     @php
@@ -68,7 +72,7 @@
                 @if ($galleryImages->count() > 0)
                     <div class="row">
                         @foreach ($galleryImages as $galleryImage)
-                            <div class="col-md-3 mb-4">
+                            <div class="mb-4 col-md-3">
                                 <div class="card h-100">
                                     <div class="gallery-item" style="height: 200px; overflow: hidden;">
                                         @if($galleryImage->image_url)
@@ -90,19 +94,25 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <small class="text-muted">Sort: {{ $galleryImage->sort_order }}</small>
                                             <div>
-                                                <a href="{{ route('gallery-images.show', $galleryImage) }}" class="btn btn-sm btn-info">
+                                                @if(isset($showRoute))
+                                                <a href="{{ route($showRoute, $galleryImage) }}" class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('gallery-images.edit', $galleryImage) }}" class="btn btn-sm btn-primary">
+                                                @endif
+                                                @if(isset($editRoute))
+                                                <a href="{{ route($editRoute, $galleryImage) }}" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('gallery-images.destroy', $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
+                                                @endif
+                                                @if(isset($destroyRoute))
+                                                <form action="{{ route($destroyRoute, $galleryImage) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this gallery image?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -125,7 +135,7 @@
 <div id="galleryModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body text-center">
+            <div class="text-center modal-body">
                 <img id="modalImage" src="" alt="Gallery Image" class="img-fluid">
             </div>
             <div class="modal-footer justify-content-between">

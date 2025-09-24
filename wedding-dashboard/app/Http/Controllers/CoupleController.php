@@ -45,10 +45,11 @@ class CoupleController extends CrudController
         $title = 'Create Couple';
         $clients = Client::all();
         
-        return view($this->routePrefix.'.create', [
+        return view('couples.create', [
             'title' => $title,
             'storeRoute' => route($this->routePrefix.'.store'),
             'clients' => $clients,
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -81,6 +82,8 @@ class CoupleController extends CrudController
         return view('admin.crud.show', [
             'record' => $couple,
             'title' => $title,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
             'columns' => ['client_id', 'groom_name', 'bride_name', 'wedding_date', 'created_at', 'updated_at'],
         ]);
     }
@@ -99,6 +102,7 @@ class CoupleController extends CrudController
             'title' => $title,
             'updateRoute' => route($this->routePrefix.'.update', $couple->id),
             'clients' => $clients,
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 

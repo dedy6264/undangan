@@ -13,7 +13,7 @@ class TimelineEventController extends CrudController
     public function __construct()
     {
         $this->model = TimelineEvent::class;
-        $this->routePrefix = 'timeline-events';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-timeline-events':'timeline-events';
         $this->columns = ['id', 'couple_id', 'title', 'event_date', 'description', 'image_url', 'sort_order', 'is_inverted', 'created_at', 'updated_at'];
     }
     
@@ -28,6 +28,10 @@ class TimelineEventController extends CrudController
         return view('timeline_events.index', [
             'timelineEvents' => $timelineEvents,
             'title' => $title,
+            'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -41,8 +45,9 @@ class TimelineEventController extends CrudController
         
         return view('timeline_events.create', [
             'title' => $title,
-            'storeRoute' => route('timeline-events.store'),
             'couples' => $couples,
+            'storeRoute' => route($this->routePrefix.'.store'),
+            'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
 
@@ -77,7 +82,7 @@ class TimelineEventController extends CrudController
 
         TimelineEvent::create($data);
 
-        return redirect()->route('timeline-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Timeline Event created successfully.');
     }
 
@@ -92,6 +97,8 @@ class TimelineEventController extends CrudController
         return view('timeline_events.show', [
             'timelineEvent' => $timelineEvent,
             'title' => $title,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'editRoute' => $this->routePrefix.'.edit',
         ]);
     }
 
@@ -107,8 +114,9 @@ class TimelineEventController extends CrudController
         return view('timeline_events.edit', [
             'record' => $record,
             'title' => $title,
-            'updateRoute' => route('timeline-events.update', $record->id),
             'couples' => $couples,
+             'indexRoute' => route($this->routePrefix.'.index'),
+            'updateRoute' => route($this->routePrefix.'.update', $record->id),
         ]);
     }
 
@@ -150,7 +158,7 @@ class TimelineEventController extends CrudController
 
         $record->update($data);
 
-        return redirect()->route('timeline-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Timeline Event updated successfully.');
     }
 
@@ -162,7 +170,7 @@ class TimelineEventController extends CrudController
         $record = TimelineEvent::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('timeline-events.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Timeline Event deleted successfully.');
     }
 }

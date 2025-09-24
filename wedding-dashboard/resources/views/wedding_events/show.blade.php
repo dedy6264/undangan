@@ -4,22 +4,26 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">View Wedding Event</h1>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">View Wedding Event</h1>
     <div>
-        <a href="{{ route('wedding-events.edit', $weddingEvent) }}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
+        @if(isset($editRoute))
+        <a href="{{ route($editRoute, $weddingEvent) }}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-warning">
             <i class="fas fa-edit fa-sm text-white-50"></i> Edit
         </a>
-        <a href="{{ route('wedding-events.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+        @endif
+        @if(isset($indexRoute))
+        <a href="{{ $indexRoute}}" class="shadow-sm d-none d-sm-inline-block btn btn-sm btn-secondary">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Wedding Events
         </a>
+        @endif
     </div>
 </div>
 
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Wedding Event Details</h6>
             </div>
             <div class="card-body">
@@ -74,7 +78,9 @@
                         </tr>
                         <tr>
                             <th>
-                                <a href="{{ route('locations.edit', $weddingEvent->location) }}" class="btn btn-sm btn-warning">Edit Location</a>
+                                @if(isset($locationRouteprefix))
+                                <a href="{{ route($locationRouteprefix.'.edit', $weddingEvent->location) }}" class="btn btn-sm btn-warning">Edit Location</a>
+                                @endif
                             </th>
                             <td></td>
                         </tr>
@@ -82,19 +88,23 @@
                 </div>
                 @else
                 <p>No location information found for this event.</p>
-                <a href="{{ route('locations.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Location</a>
+                    @if(isset($locationRouteprefix))
+                    <a href="{{ route($locationRouteprefix.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Location</a>
+                    @endif
                 @endif
                 
                 <h5 class="mt-4">Gallery Images</h5>
                 @if($weddingEvent->galleryImages->count() > 0)
                 <div class="row">
                     @foreach($weddingEvent->galleryImages as $image)
-                    <div class="col-md-3 mb-3">
+                    <div class="mb-3 col-md-3">
                         <div class="card">
                             <img src="{{ $image->image_url }}" class="card-img-top" alt="{{ $image->description }}" style="height: 150px; object-fit: cover;">
                             <div class="card-body">
                                 <p class="card-text">{{ $image->description }}</p>
-                                <a href="{{ route('gallery-images.edit', $image) }}" class="btn btn-sm btn-warning">Edit</a>
+                                @if(isset($galleryImageRouteprefix))
+                                <a href="{{ route($galleryImageRouteprefix.'.edit', $image) }}" class="btn btn-sm btn-warning">Edit</a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -103,7 +113,9 @@
                 @else
                 <p>No gallery images found for this event.</p>
                 @endif
-                <a href="{{ route('gallery-images.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Gallery Image</a>
+                @if(isset($galleryImageRouteprefix))
+                <a href="{{ route($galleryImageRouteprefix.'.create') }}?wedding_event_id={{ $weddingEvent->id }}" class="btn btn-primary">Add Gallery Image</a>
+                @endif
             </div>
         </div>
     </div>
