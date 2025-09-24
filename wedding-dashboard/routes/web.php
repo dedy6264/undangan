@@ -66,6 +66,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // All admin CRUD operations
     Route::resource('clients', ClientController::class);
     Route::resource('couples', CoupleController::class);
+    Route::get('couples/{couple}/select-payment', [CoupleController::class, 'selectPayment'])->name('couples.select-payment');
+    Route::post('couples/{couple}/process-payment', [CoupleController::class, 'processPayment'])->name('couples.process-payment');
     Route::resource('people', PersonController::class);
     Route::resource('wedding-events', WeddingEventController::class);
     Route::resource('locations', LocationController::class);
@@ -100,6 +102,8 @@ Route::middleware(['auth', 'client'])->group(function () {
     
     // Client-specific routes with full CRUD operations
     Route::resource('my-couples', CoupleController::class);
+    Route::get('my-couples/{couple}/select-payment', [CoupleController::class, 'selectPayment'])->name('my-couples.select-payment');
+    Route::post('my-couples/{couple}/process-payment', [CoupleController::class, 'processPayment'])->name('my-couples.process-payment');
     Route::resource('my-wedding-events', WeddingEventController::class);
     Route::resource('my-gallery-images', GalleryImageController::class);
     Route::resource('my-timeline-events', TimelineEventController::class);

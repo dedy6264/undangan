@@ -21,6 +21,8 @@
                     @csrf
                     
                     <div class="row">
+                        <!-- Only show client selection for admin users -->
+                        @if(auth()->user()->role === 'admin')
                         <div class="mb-3 col-md-6">
                             <label for="client_id">Client</label>
                             <select class="form-control" id="client_id" name="client_id" required>
@@ -34,6 +36,27 @@
                             @if ($errors->has('client_id'))
                                 <div class="mt-2 text-danger">
                                     {{ $errors->first('client_id') }}
+                                </div>
+                            @endif
+                        </div>
+                        @else
+                        <!-- For client users, we'll pass the client_id automatically -->
+                        <input type="hidden" name="client_id" value="{{ auth()->user()->client_id }}">
+                        @endif
+                        
+                        <div class="mb-3 col-md-6">
+                            <label for="package_id">Package</label>
+                            <select class="form-control" id="package_id" name="package_id" required>
+                                <option value="">Select a package</option>
+                                @foreach ($packages as $package)
+                                    <option value="{{ $package->id }}" {{ old('package_id') == $package->id ? 'selected' : '' }}>
+                                        {{ $package->name }} - Rp {{ number_format($package->price, 2) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('package_id'))
+                                <div class="mt-2 text-danger">
+                                    {{ $errors->first('package_id') }}
                                 </div>
                             @endif
                         </div>

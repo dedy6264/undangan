@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Couple;
 use App\Models\Client;
+use App\Models\Package;
+use App\Models\Transaction;
+use App\Models\PaymentTransaction;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class CoupleController extends CrudController
 {
@@ -44,11 +49,13 @@ class CoupleController extends CrudController
     {
         $title = 'Create Couple';
         $clients = Client::all();
+        $packages = Package::all();
         
         return view('couples.create', [
             'title' => $title,
             'storeRoute' => route($this->routePrefix.'.store'),
             'clients' => $clients,
+            'packages' => $packages,
             'indexRoute' => route($this->routePrefix.'.index'),
         ]);
     }
@@ -58,17 +65,155 @@ class CoupleController extends CrudController
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'groom_name' => 'required|string|max:100',
-            'bride_name' => 'required|string|max:100',
-            'wedding_date' => 'required|date',
-        ]);
+        // Get the authenticated user
+        $user = auth()->user();
+        
+        // If user is a client, automatically set client_id from user's client_id
+        if ($user->role === 'client' && $user->client_id) {
+            $request->merge(['client_id' => $user->client_id]);
+        }
 
-        Couple::create($request->all());
+        // If package_id is provided, validate it
+        if ($request->has('package_id')) {
+            $request->validate([
+                'client_id' => 'required|exists:clients,id',
+                'groom_name' => 'required|string|max:100',
+                'bride_name' => 'required|string|max:100',
+                'wedding_date' => 'required|date',
+                'package_id' => 'required|exists:packages,id',
+            ]);
+        } else {
+            // Original validation for regular couple creation
+            $request->validate([
+                'client_id' => 'required|exists:clients,id',
+                'groom_name' => 'required|string|max:100',
+                'bride_name' => 'required|string|max:100',
+                'wedding_date' => 'required|date',
+            ]);
+        }
+
+        $couple = Couple::create($request->all());
+
+        // If package_id was provided, store it in session and redirect to payment method selection
+        if ($request->has('package_id')) {
+            session(['temp_couple_id' => $couple->id, 'temp_package_id' => $request->package_id]);
+            
+            // Get the client ID from the couple to use in payment method selection
+            session(['temp_client_id' => $couple->client_id]);
+            
+            // Redirect to payment method selection
+            $routePrefix = auth()->user()->role == "client" ? 'my-couples' : 'couples';
+            return redirect()->route($routePrefix . '.select-payment', ['couple' => $couple->id])
+                ->with('success', 'Couple created successfully. Please select a payment method.');
+        }
 
         return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Couple created successfully.');
+    }
+    
+    /**
+     * Show the payment method selection form after couple creation.
+     */
+    public function selectPayment($coupleId): View
+    {
+        $couple = Couple::findOrFail($coupleId);
+        $paymentMethods = PaymentMethod::all();
+        $title = 'Select Payment Method';
+        
+        $routePrefix = auth()->user()->role == "client" ? 'my-couples' : 'couples';
+        
+        return view('couples.select-payment', [
+            'title' => $title,
+            'couple' => $couple,
+            'paymentMethods' => $paymentMethods,
+            'processPaymentRoute' => route($routePrefix . '.process-payment', ['couple' => $coupleId]),
+            'indexRoute' => route($this->routePrefix.'.index'),
+        ]);
+    }
+
+    /**
+     * Process payment method selection and create transaction.
+     */
+    public function processPayment(Request $request, $coupleId): RedirectResponse
+    {
+        $request->validate([
+            'payment_method_id' => 'required|exists:payment_methods,id',
+        ]);
+
+        // Get couple and package from session
+        $coupleIdFromSession = session('temp_couple_id');
+        $packageId = session('temp_package_id');
+        
+        if (!$coupleIdFromSession || !$packageId) {
+            return redirect()->route($this->routePrefix.'.index')
+                ->with('error', 'Session expired. Please start again.');
+        }
+
+        $couple = Couple::findOrFail($coupleIdFromSession);
+        $package = Package::findOrFail($packageId);
+        $paymentMethod = PaymentMethod::findOrFail($request->payment_method_id);
+
+        // Calculate total amount (package price + fees)
+        $providerAdminFee = $paymentMethod->provider_admin_fee ?? 0;
+        $providerMerchantFee = $paymentMethod->provider_merchant_fee ?? 0;
+        $adminFee = $paymentMethod->admin_fee ?? 0;
+        $merchantFee = $paymentMethod->merchant_fee ?? 0;
+
+        $totalAmount = $package->price + $providerAdminFee + $providerMerchantFee + $adminFee + $merchantFee;
+
+        DB::beginTransaction();
+        try {
+            // Create transaction
+            $transaction = Transaction::create([
+                'couple_id' => $couple->id,
+                'package_id' => $package->id,
+                'status' => 'pending', // Default status, will update based on payment method
+                'total_amount' => $totalAmount,
+            ]);
+
+            // Create payment transaction
+            $paymentTransaction = PaymentTransaction::create([
+                'transaction_id' => $transaction->id,
+                'payment_method_id' => $paymentMethod->id,
+                'payment_method_name' => $paymentMethod->payment_method_name,
+                'provider_admin_fee' => $providerAdminFee,
+                'provider_merchant_fee' => $providerMerchantFee,
+                'admin_fee' => $adminFee,
+                'merchant_fee' => $merchantFee,
+            ]);
+
+            // Check if payment method is "cash" to mark as successful
+            $isCashPayment = strtolower($paymentMethod->payment_method_name) === 'cash' || 
+                           strtolower($paymentMethod->payment_method_name) === 'tunai';
+            
+            if ($isCashPayment) {
+                // Update transaction status to paid and set paid_at
+                $transaction->update([
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                ]);
+
+                // Update payment transaction status to success
+                $paymentTransaction->update([
+                    'status_code' => 'success',
+                    'status_message' => 'Payment completed successfully',
+                ]);
+            }
+
+            DB::commit();
+
+            // Clear temporary session data
+            session()->forget(['temp_couple_id', 'temp_package_id', 'temp_client_id']);
+
+            return redirect()->route($this->routePrefix.'.index')
+                ->with('success', 'Payment processed successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return redirect()->route($this->routePrefix.'.index')
+                ->with('error', 'Failed to process payment. Please try again.')
+                ->withInput();
+        }
     }
 
     /**
