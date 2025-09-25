@@ -217,6 +217,27 @@
       font-family: "Lavishly Yours", cursive;
     }
       
+    /* Responsive map */
+    #location .map-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;   /* biar map ga terlalu lebar di desktop */
+      margin: 0 auto;
+      padding-bottom: 56.25%; /* rasio 16:9 */
+      height: 0;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    #location .map-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
     /* Story */
     #story { 
       padding-top: 8rem;
@@ -380,6 +401,8 @@
       background: linear-gradient(135deg, #1c1c1c, #2e2e2e); /* elegan gelap */
       color: #fff;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+       position: relative; /* penting supaya pseudo bisa nempel */
+      overflow: hidden; /* supaya coakan rapi */
     }
 
     #reservation .card-left {
@@ -545,6 +568,61 @@
           width: calc(100% - 180px);
           float: right;
       }
+      #reservation .invitation-card {
+        grid-template-columns: 1fr; /* dari 2 kolom jadi 1 */
+        padding: 20px;
+      }
+
+      /* Coakan kiri */
+      #reservation .invitation-card::before {
+        content: "";
+        position: absolute;
+        top: 49%;
+        left: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc; /* sama dengan background section */
+        border-radius: 50%;
+      }
+
+      /* Coakan kanan */
+      #reservation .invitation-card::after {
+        content: "";
+        position: absolute;
+        top: 49%;
+        right: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc;
+        border-radius: 50%;
+      }
+      #reservation .card-left {
+        border-right: none;       /* hilangkan garis pemisah */
+        border-bottom: 2px dashed rgba(255,255,255,0.2); /* ganti jadi garis bawah */
+        padding: 20px;
+        padding-bottom: 30px;
+      }
+
+      #reservation .card-left img {
+        width: 180px; /* kecilkan QR code */
+        height: 180px;
+      }
+
+      #reservation .card-right {
+        padding-left: 0;
+        margin-top: 20px;
+        text-align: center; /* center-kan teks di mobile */
+      }
+
+      #reservation .invite-header {
+        font-size: 20px;
+      }
+
+      #reservation .invite-detail {
+        font-size: 14px;
+      }
     }
     @media(max-width: 576px) {
       .profile-card {
@@ -585,6 +663,36 @@
           width: calc(100% - 130px);
           float: right;
           padding: 10px;
+      }
+      #reservation .card-left img {
+        width: 150px;
+        height: 150px;
+      }
+
+      /* Coakan kiri */
+      #reservation .invitation-card::before {
+        content: "";
+        position: absolute;
+        top: 46%;
+        left: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc; /* sama dengan background section */
+        border-radius: 50%;
+      }
+
+      /* Coakan kanan */
+      #reservation .invitation-card::after {
+        content: "";
+        position: absolute;
+        top: 46%;
+        right: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc;
+        border-radius: 50%;
       }
     }
    
@@ -725,7 +833,7 @@
                   <h3>{{ $location->venue_name }}</h3>
                   <h3>{{ $location->address }}</h3>
                 </div>
-                <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
+                <div class="col-lg-6 fade-content map-container" style="margin-top: 12px !important; margin-bottom: 12px !important;">
                   @if($location->map_embed_url)
                   {!! $location->map_embed_url !!}
                   @else
@@ -854,7 +962,7 @@
           <h5 class="mb-3 text-center fw-bold">Kirim Pesan & Doa</h5>
           <form id="giftForm">
             <div class="mb-3">
-              <input type="text" class="form-control" name="nama" placeholder="Nama Anda" required>
+              <input type="text" class="form-control" name="nama" id="guestNameInput" placeholder="Nama Anda" value="{{ $guestName ?? '' }}" required readonly>
             </div>
             <div class="mb-3">
               <textarea class="form-control" name="pesan" rows="3" placeholder="Tulis pesan & doa..." required></textarea>
@@ -869,16 +977,8 @@
       <!-- List Pesan -->
       <div class="mt-4 messages">
         <h5 class="mb-4 text-center">Pesan & Doa</h5>
-        <div id="" class="gap-3 messageList d-flex flex-column">
-          <!-- Contoh Pesan -->
-          <div class="p-3 border-0 shadow-sm card">
-            <strong>Andi:</strong>
-            <p class="mb-0">Selamat menempuh hidup baru, semoga bahagia selalu!</p>
-          </div>
-          <div class="p-3 border-0 shadow-sm card">
-            <strong>Bella:</strong>
-            <p class="mb-0">Doa terbaik untuk kalian berdua 💕</p>
-          </div>
+        <div id="messageList" class="gap-3 messageList d-flex flex-column">
+          
         </div>
       </div>
     </div>
@@ -959,20 +1059,86 @@
         });
       });
 
-      // Simulasi simpan pesan (local, tanpa backend)
+     // Load existing messages when page loads
+      function loadMessages() {
+        fetch('/guest-messages')
+          .then(response => response.json())
+          .then(data => {
+            if(data.success && data.data.length > 0) {
+              // Clear existing messages (except the example ones)
+              messageList.innerHTML = '';
+              
+              // Add each message to the list
+              data.data.forEach(message => {
+                const card = document.createElement("div");
+                card.className = "card border-0 shadow-sm p-3 fade-in";
+                card.innerHTML = `<strong>${message.guest_name}:</strong><p class="mb-0">${message.message}</p>`;
+                messageList.appendChild(card);
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error loading messages:', error);
+          });
+      }
+      
+      // Load messages when page is ready
+      document.addEventListener('DOMContentLoaded', loadMessages);
+
+      // Simpan pesan ke backend
       const form = document.getElementById("giftForm");
       const messageList = document.getElementById("messageList");
 
       form.addEventListener("submit", function(e){
         e.preventDefault();
-        const nama = this.nama.value.trim();
-        const pesan = this.pesan.value.trim();
-        if(nama && pesan){
-          const card = document.createElement("div");
-          card.className = "card border-0 shadow-sm p-3 fade-in";
-          card.innerHTML = `<strong>${nama}:</strong><p class="mb-0">${pesan}</p>`;
-          messageList.prepend(card); // tambahkan di atas
-          this.reset();
+        
+        const formData = {
+          guest_name: this.nama.value.trim(),
+          message: this.pesan.value.trim(),
+          invitation_id: {{ $invitation->id ?? 0 }}, // Assuming invitation ID is available in the view
+          _token: '{{ csrf_token() }}'
+        };
+
+        if(formData.guest_name && formData.message){
+          // Show loading state
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Mengirim...';
+          submitBtn.disabled = true;
+
+          fetch('/api/guest-messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': formData._token
+            },
+            body: JSON.stringify(formData)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if(data.success) {
+              // Add the new message to the list
+              const card = document.createElement("div");
+              card.className = "card border-0 shadow-sm p-3 fade-in";
+              card.innerHTML = `<strong>${formData.guest_name}:</strong><p class="mb-0">${formData.message}</p>`;
+              messageList.prepend(card); // tambahkan di atas
+              
+              // Reset form
+              this.reset();
+              alert('Pesan berhasil dikirim!');
+            } else {
+              alert('Gagal mengirim pesan: ' + (data.message || 'Terjadi kesalahan'));
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat mengirim pesan');
+          })
+          .finally(() => {
+            // Reset button state
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          });
         }
       });
     </script>

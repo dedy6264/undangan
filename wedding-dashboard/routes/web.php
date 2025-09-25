@@ -37,6 +37,8 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+    Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
+    Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -54,8 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/create-order/step4', [OrderController::class, 'processStep4'])->name('create-order.process-step4');
     Route::post('/create-order/cancel', [OrderController::class, 'cancel'])->name('create-order.cancel');
 
-    Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
-    Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
+    // API routes for guest messages from invitation page
+
+    Route::post('/api/guest-messages', [\App\Http\Controllers\GuestMessageController::class, 'store'])->name('api.guest-messages.store');
+    Route::get('/api/wedding-events/{wedding_event_id}/guest-messages', [\App\Http\Controllers\GuestMessageController::class, 'indexForWeddingEvent'])->name('api.guest-messages.index');
 
 });
 

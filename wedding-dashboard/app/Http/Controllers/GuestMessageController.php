@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\GuestMessage;
 use App\Models\Guest;
 use App\Models\WeddingEvent;
+use App\Models\Invitation;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class GuestMessageController extends CrudController
@@ -59,20 +61,64 @@ class GuestMessageController extends CrudController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
-        $request->validate([
-            'guest_id' => 'required|exists:guests,id',
-            'wedding_event_id' => 'required|exists:wedding_events,id',
-            'guest_name' => 'required|string|max:100',
-            'message' => 'required|string',
-            'is_approved' => 'nullable|boolean',
-        ]);
+        // Check if this is an API request (from the invitation page) or admin panel request
+        $isApiRequest = $request->has('invitation_id');
+        
+        if ($isApiRequest) {
+            $validated = $request->validate([
+                'guest_name' => 'required|string|max:100',
+                'message' => 'required|string|max:1000',
+                'invitation_id' => 'required|exists:invitations,id',
+            ], [
+                'guest_name.required' => 'Nama harus diisi.',
+                'message.required' => 'Pesan harus diisi.',
+                'invitation_id.required' => 'ID undangan harus disediakan.',
+                'invitation_id.exists' => 'ID undangan tidak valid.',
+            ]);
 
-        GuestMessage::create($request->all());
+            try {
+                // Get the invitation to get guest_id and wedding_event_id
+                $invitation = Invitation::findOrFail($validated['invitation_id']);
+                
+                // Create the guest message
+                $guestMessage = GuestMessage::create([
+                    'guest_id' => $invitation->guest_id,
+                    'wedding_event_id' => $invitation->wedding_event_id,
+                    'guest_name' => $validated['guest_name'],
+                    'message' => $validated['message'],
+                    'is_approved' => false, // Default to not approved yet
+                ]);
 
-        return redirect()->route($this->routePrefix.'.index')
-            ->with('success', 'Guest Message created successfully.');
+                // Return JSON response for API requests
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pesan berhasil dikirim',
+                    'data' => $guestMessage
+                ], 201);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat mengirim pesan',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        } else {
+            // Original validation for admin panel requests
+            $request->validate([
+                'guest_id' => 'required|exists:guests,id',
+                'wedding_event_id' => 'required|exists:wedding_events,id',
+                'guest_name' => 'required|string|max:100',
+                'message' => 'required|string',
+                'is_approved' => 'nullable|boolean',
+            ]);
+
+            GuestMessage::create($request->all());
+
+            return redirect()->route($this->routePrefix.'.index')
+                ->with('success', 'Guest Message created successfully.');
+        }
     }
 
     /**
@@ -143,5 +189,29 @@ class GuestMessageController extends CrudController
 
         return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Guest Message deleted successfully.');
+    }
+    
+    /**
+     * Display a listing of approved guest messages for a specific wedding event via API.
+     */
+    public function indexForWeddingEvent($wedding_event_id): JsonResponse
+    {
+        try {
+            $guestMessages = GuestMessage::where('wedding_event_id', $wedding_event_id)
+                ->where('is_approved', true)
+                ->orderBy('created_at', 'desc')
+                ->get(['id', 'guest_name', 'message', 'created_at']);
+                
+            return response()->json([
+                'success' => true,
+                'data' => $guestMessages
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil pesan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

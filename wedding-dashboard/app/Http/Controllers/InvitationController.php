@@ -16,7 +16,9 @@ class InvitationController extends CrudController
     public function __construct()
     {
         $this->model = Invitation::class;
-        $this->routePrefix = auth()->user()->role=="client" ?'my-invitations':'invitations';
+        // $this->routePrefix = auth()->user()->role=="client" ?'my-invitations':'invitations';
+ $role = optional(auth()->user())->role;
+        $this->routePrefix = $role === "client"? 'my-invitations': 'invitations';
         $this->columns = ['id', 'guest_id', 'wedding_event_id', 'invitation_code', 'is_attending', 'responded_at', 'created_at', 'updated_at'];
     }
     
@@ -286,7 +288,8 @@ class InvitationController extends CrudController
         $randomIndex = rand(0, $maxIndex);
         $randomBg = $bgImage[$randomIndex] ?? 'inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg';
 
-        return view('invitation_layout.dynamic', [
+        // return view('invitation_layout.dynamic', [
+        return view('invitation_layout.index', [
             'gifts'=>$gifts,
             'backgroundImages'=>$randomBg,
             'invitation' => $invitation,
