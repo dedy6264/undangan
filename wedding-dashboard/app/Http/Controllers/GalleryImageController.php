@@ -14,7 +14,7 @@ class GalleryImageController extends CrudController
     {
         $this->model = GalleryImage::class;
         $this->routePrefix = auth()->user()->role=="client" ? 'my-gallery-images':'gallery-images';
-        $this->columns = ['id', 'wedding_event_id', 'image_url', 'thumbnail_url', 'description', 'sort_order', 'created_at', 'updated_at'];
+        $this->columns = ['id', 'wedding_event_id', 'image_url', 'thumbnail_url', 'description', 'sort_order', 'is_background', 'created_at', 'updated_at'];
     }
     
     /**
@@ -88,6 +88,9 @@ class GalleryImageController extends CrudController
                 $image->move(public_path('images/gallery'), $imageName);
                 $imageUrl = 'images/gallery/' . $imageName;
 
+                // Determine if background based on checkbox - if present in request means checked
+                $isBackground = $request->has('is_background') ? 'Y' : 'N';
+
                 // Create gallery image record
                 GalleryImage::create([
                     'wedding_event_id' => $request->wedding_event_id,
@@ -95,6 +98,7 @@ class GalleryImageController extends CrudController
                     'thumbnail_url' => $imageUrl, // For simplicity, use the same image as thumbnail
                     'description' => $request->description,
                     'sort_order' => $request->sort_order ?? 0,
+                    'is_background' => $isBackground, // Default to 'N' if checkbox is not checked
                 ]);
             }
         }
@@ -157,6 +161,9 @@ class GalleryImageController extends CrudController
 
         // Handle file upload if a new image is provided
         $data = $request->only(['wedding_event_id', 'description', 'sort_order']);
+        
+        // Determine if background based on checkbox - if present in request means checked
+        $data['is_background'] = $request->has('is_background') ? 'Y' : 'N';
         
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             // Delete old image if it exists and is a local file

@@ -77,6 +77,16 @@
                         @enderror
                     </div>
                     
+                    <div class="mb-3 form-group">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_background" id="is_background" value="Y" {{ old('is_background', $record->is_background) == 'Y' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_background">Is Background Image?</label>
+                        </div>
+                        @error('is_background')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Update Gallery Image
                     </button>
@@ -102,6 +112,24 @@
                 document.getElementById('imagePreview').style.display = 'block';
             }
             reader.readAsDataURL(file);
+        }
+    });
+    
+    // Handle checkbox for is_background field
+    const isBackgroundCheckbox = document.getElementById('is_background');
+    // Set initial value based on current state
+    if (isBackgroundCheckbox.checked) {
+        isBackgroundCheckbox.value = 'Y';
+    } else {
+        isBackgroundCheckbox.value = 'N';
+    }
+    
+    // Update value when state changes
+    isBackgroundCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            this.value = 'Y';
+        } else {
+            this.value = 'N';
         }
     });
 </script>

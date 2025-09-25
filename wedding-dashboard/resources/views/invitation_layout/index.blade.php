@@ -37,7 +37,9 @@
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: url(../inv/img/gpt.png) 50% 20% /cover no-repeat; /*40% 20% atau center untuk mengatur posisi gambar*/
+      /* background: url(../inv/img/gpt.png) 50% 20% /cover no-repeat; 40% 20% atau center untuk mengatur posisi gambar */
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  50% 20% / cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -103,7 +105,9 @@
       /* justify-content: center; */
       text-align: center;
       color: white;
-      background: url('../inv/img/gpt1.png')  center / cover no-repeat;
+      /* background: url('../inv/img/gpt1.png')  center / cover no-repeat; */
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt1.png') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
     }
@@ -129,7 +133,8 @@
       justify-content: center;
       text-align: center;
       color: white;
-      background: url('../inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg')  center / cover no-repeat;
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
       opacity: 0.8;
@@ -202,7 +207,8 @@
       justify-content: center;
       text-align: center;
       color: white;
-      background: url('../inv/img/gpt.png')  center / cover no-repeat;
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt.png') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
     }
@@ -225,7 +231,8 @@
       /* text-align: center; */
       color: white;
       background: rgba(0,0,0,0.5);
-      background: url('../inv/img/gpt.png')  center / cover no-repeat;
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt.png') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; 🎯 ini yang bikin statik
       /* background-position: center; */
     }
@@ -633,8 +640,8 @@
     {{-- <div class="fade-content"> --}}
         <div class="head-top fade-content">
             <h2 class="fw-light">Wedding Invitation</h2>
-            <h1 class="fw-bold display-3">Agus & Joy’s</h1>
-            <p class="fw-bold">Saturday, 25 October 2025</p>
+            <h1 class="fw-bold display-3">{{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }}'s</h1>
+            <p class="fw-bold">{{ \Carbon\Carbon::parse($couple->wedding_date)->format('l, d F Y') }}</p>
         </div>
         <div class="head-bottom fade-content">
             <p class="fs-4 ">With the blessing of God, we joyfully invite you to our wedding celebration</p>
@@ -647,187 +654,157 @@
   <section id="info" class="fade-section">
     <div class="container profile-card ">
         <div class="mt-5 row couple fade-content">
+           @if($groom)
                 <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
                     <div class="row">
                         <div class=" col-6 text-end">
-                            <h3>Agus Kurniawan</h3>
-                            <p>Son of Mr. Ishak (Gan Dwan Hien) (♰)
-                                & Mrs. Endang Sriwati (♰)</p>
-                            <p>Son of BlaBla</p>
+                            <h3>{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}</h3>
+                            <p>{{ $groom->additional_info ? $groom->additional_info : 'Son of Mr. and Mrs.' }}</p>
+                            @if($groom->personParent)
+                            <p>Son of {{ $groom->personParent->father_name ?? 'Father' }} & {{ $groom->personParent->mother_name ?? 'Mother' }}</p>
+                            @endif
                         </div>
                         <div class="col-6">
-                            <img src="{{url('inv/img/gpt2.png')}}" alt="Dedy" class="rounded img-responsive " style="object-position: 70% center; ">
+                            <img src="{{ $groom->image_url ? asset($groom->image_url) : asset('inv/img/gpt2.png') }}"  alt="{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}"  class="rounded img-responsive " style="object-position: 70% center; ">
                         </div>
                     </div>
                 </div>
+            @endif
+            @if($bride)
                 <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
                     <div class="row">
                         <div class="col-6">
-                            <img src="{{url('inv/img/gpt3.png')}}" alt="Dedy" class="rounded img-responsive " style="object-position: 20% center;  ">
+                            <img src="{{ $bride->image_url ? url($bride->image_url) : url('inv/img/gpt3.png') }}"  alt="{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}" class="rounded img-responsive " style="object-position: 20% center;  ">
                         </div>
                         <div class=" col-6 text-start">
-                            <h3>Joy Adia Prajogo</h3>
-                            <p>Son of Mr. Ishak (Gan Dwan Hien) (♰)
-                              & Mrs. Endang Sriwati (♰)</p>
-                            <p>Son of BlaBla</p>
+                            <h3>{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}</h3>
+                        <p>{{ $bride->additional_info ? $bride->additional_info : 'Daughter of Mr. and Mrs.' }}</p>
+                        @if($bride->personParent)
+                        <p>Daughter of {{ $bride->personParent->father_name ?? 'Father' }} & {{ $bride->personParent->mother_name ?? 'Mother' }}</p>
+                        @endif
                         </div>
                     </div>
                 </div>
+            @endif
             </div>
     </div>
   </section>
 
   <!-- GALLERY -->
+  @if($galleryImages && $galleryImages->count() > 0)
   <section id="gallery" class=" fade-section">
     <div class="mb-5 text-center fade-content">
       <h2 class="fw-bold">Captured Intimacy</h2>
       <p class="text-muted">Setiap bingkai menyimpan kisah penuh kehangatan dan kedekatan</p>
     </div>
-        <div class="row fade-content">
-            <a href="{{url('inv/img/FPG2708-scaled.jpg')}}" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="{{url('inv/img/FPG2708-scaled.jpg')}}" class="img-fluid" style="border-radius:15px">
-            </a>
-            <a href="{{url('inv/img/FPG2708-scaled.jpg')}}" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="{{url('inv/img/FPG2708-scaled.jpg')}}" class="img-fluid" style="border-radius:15px">
-                 <div class="overlay"><p>Foto 2 - Deskripsi</p></div>
-            </a>
-            <a href="{{url('inv/img/FPG2708-scaled.jpg')}}" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="{{url('inv/img/FPG2708-scaled.jpg')}}" class="img-fluid" style="border-radius:15px">
-            </a>
-        </div>
-        <div class="row fade-content">
-            <a href="https://unsplash.it/1200/768.jpg?image=251" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="https://unsplash.it/600.jpg?image=251" class="img-fluid" style="border-radius:15px">
-            </a>
-            <a href="https://unsplash.it/1200/768.jpg?image=252" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="https://unsplash.it/600.jpg?image=252" class="img-fluid" style="border-radius:15px">
-            </a>
-            <a href="https://unsplash.it/1200/768.jpg?image=253" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
-                <img src="https://unsplash.it/600.jpg?image=253" class="img-fluid" style="border-radius:15px">
-            </a>
-        </div>
-    {{-- </div> --}}
+    <div class="row fade-content">
+      @foreach($galleryImages as $image)
+        <a href="{{ url($image->image_url) }}" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
+            <img src="{{ url($image->image_url) }}" class="img-fluid" style="border-radius:15px">
+            @if($image->description)
+            <div class="overlay">
+              <p>{{ $image->description }}</p>
+            </div>
+            @endif
+        </a>
+      @endforeach
+    </div>
   </section>
+  @endif
   
   <!-- LOCATION -->
+  @if($location)
   <section id="location" class="fade-section">
     <div class="container text-center fade-content">
       <div class="container profile-card ">
         <h2>Wedding Celebration</h2>
         <div class="mt-5 row couple fade-content">
                 <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                  <h3>Saturday, August 9th 2025</h3>
-                  <p>17:00 - End</p>
-                  <h3>GBI Gajah Mada Semarang Jl. </h3>
-                  <h3>Gajah Mada 78-86</h3>
-                  <h3>Semarang</h3>
+                  <h3>{{ \Carbon\Carbon::parse($weddingEvent->event_date)->format('l, d F Y') }}</h3>
+                  <p>{{ $weddingEvent->event_time }} - End</p>
+                  <h3>{{ $location->venue_name }}</h3>
+                  <h3>{{ $location->address }}</h3>
                 </div>
                 <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d723.9583492669938!2d110.42113368305529!3d-6.977976401848527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b548a1791f7%3A0xd5809cfdde700fdb!2sGBI%20Gajah%20Mada%20Semarang!5e1!3m2!1sen!2sid!4v1756993595815!5m2!1sen!2sid" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                  {{-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d723.9583492669938!2d110.42113368305529!3d-6.977976401848527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b548a1791f7%3A0xd5809cfdde700fdb!2sGBI%20Gajah%20Mada%20Semarang!5e1!3m2!1sen!2sid!4v1756993595815!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> --}}
+                  @if($location->map_embed_url)
+                  {!! $location->map_embed_url !!}
+                  @else
+                  <p>Location details will be updated soon</p>
+                  @endif
                 </div>
             </div>
       </div>
     </div>
   </section>
+  @endif
 
   <!-- Reservation -->
   <section id="reservation" class="fade-section">
     <div class="fade-content">
       <h2 class="mb-4">Your Invitation</h2>
     </div>
-    {{-- <div class="p-4 shadow fade-content card" style="max-width: 450px;">
-      <div class="text-center">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INV123456" alt="Invitation QR" class="mb-3">
-        <h5 class="fw-bold">John Doe</h5>
-        <p class="text-muted">You are invited to celebrate our wedding</p>
-        <p><strong>15 November 2025</strong><br>Jakarta Convention Center</p>
-      </div>
-    </div> --}}
     <div class="invitation-card">
     <!-- Bagian kiri: Barcode -->
       <div class="card-left">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=RESV123456" 
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ route('invitation.show', ['id' => $invitation->id]) }}" 
             alt="Reservation Barcode" />
-        <p class="code">Kode: RESV123456</p>
+        <p class="code">Kode: {{ $invitation->invitation_code }}</p>
       </div>
 
     <!-- Bagian kanan: Informasi Undangan -->
       <div class="card-right">
         <h2 class="invite-header">Undangan Spesial</h2>
-        <h2 class="invite-detail"><strong>Kepada</strong><br> John & Jane Wedding</h2>
+        <h2 class="invite-detail"><strong>Kepada</strong><br> {{ $guestName }}</h2>
         <h2 class="invite-header">Wedding Matrimony</h2>
-        <p class="invite-detail"><i class="bi bi-calendar-check fs-4"></i> Sabtu, 20 September 2025</p>
-        <p class="invite-detail"><i class="bi bi-clock fs-4"></i> 19:00 WIB</p>
-        <p class="invite-detail"><i class="bi bi-geo-alt fs-4"></i> Hotel Grand Ballroom, Jakarta</p>
+        <p class="invite-detail"><i class="bi bi-calendar-check fs-4"></i> {{ \Carbon\Carbon::parse($weddingEvent->event_date)->format('l, d F Y') }}</p>
+        <p class="invite-detail"><i class="bi bi-clock fs-4"></i> {{ $weddingEvent->event_time }} WIB</p>
+        <p class="invite-detail"><i class="bi bi-geo-alt fs-4"></i> {{ $location->venue_name ?? 'Venue' }}, {{ $location->address ?? 'Address' }}</p>
       </div>
     </div>
   </section>
 
   <!-- Story -->
+  @if($timelineEvents && $timelineEvents->count() > 0)
   <section id="story" class="py-5 story">
     <div class="container">
       <h2 class="mb-5 text-center" style="color:#e83e8c;">Our Journey</h2>
     </div>
     <div class="container profile-card">
-      {{-- <div class="col"> --}}
+      @foreach($timelineEvents as $index => $event)
+      @if($index % 2 == 0)
         <ul class="timeline">
           <li>
-            <div class="timeline-image" style="background-image: url('inv/img/gpt2.png') ;"></div>
+            <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('inv/img/gpt2.png') }}') ;"></div>
             <div class="timeline-panel">
               <div class="timeline-heading">
-                {{-- <h3>First Meeting</h3> --}}
-                <span class="date">January 2020</span>
+                <span class="date">{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
               </div>
               <div class="timeline-body">
-                <p>We met at a mutual friend's party and instantly connected over our shared love for adventure.</p>
+                {{-- <h4>{{ $event->title }}</h4> --}}
+                <p>{{ $event->description }}</p>
               </div>
           </li>
         </ul>
+      @else
         <ul class="timeline">
           <li class="timeline-inverted">
-              <div class="timeline-image" style="background-image: url('inv/img/cowok.png');"></div>
+              <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('inv/img/gpt2.png') }}');"></div>
               <div class="timeline-panel">
                   <div class="timeline-heading">
-                      {{-- <h3>First meet</h3> --}}
-                      <span>1 June 2000</span>
+                    <span>{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
                   </div>
                   <div class="timeline-body">
-                    <p>We met at a mutual friend's party and instantly connected over our shared love for adventure.</p>
+                    {{-- <h4>{{ $event->title }}</h4> --}}
+                    <p>{{ $event->description }}</p>
                   </div>
               </div>
           </li>
         </ul>
-        <ul class="timeline">
-          <li>
-            <div class="timeline-image" style="background-image: url('inv/img/cowok.png');"></div>
-            <div class="timeline-panel">
-              <div class="timeline-heading">
-                {{-- <h3>First Meeting</h3> --}}
-                <span class="date">January 2020</span>
-              </div>
-              <div class="timeline-body">
-                <p>We met at a mutual friend's party and instantly connected over our shared love for adventure.</p>
-              </div>
-          </li>
-        </ul>
-         <ul class="timeline">
-          <li class="timeline-inverted">
-              <div class="timeline-image" style="background-image: url('inv/img/cowok.png');"></div>
-              <div class="timeline-panel">
-                  <div class="timeline-heading">
-                      {{-- <h3>First meet</h3> --}}
-                      <span>1 June 2000</span>
-                  </div>
-                  <div class="timeline-body">
-                    <p>We met at a mutual friend's party and instantly connected over our shared love for adventure.</p>
-                  </div>
-              </div>
-          </li>
-        </ul>
-      {{-- </div> --}}
+        @endif
+        @endforeach
     </div>
   </section>
+  @endif
 
   <!-- Gift -->
   <section id="gift" class="fade-section">
@@ -836,17 +813,29 @@
       <p class="mb-5 text-center">Doa restu Anda sudah merupakan hadiah terbaik bagi kami. Namun jika ingin memberikan tanda kasih, dapat melalui rekening berikut:</p>
 
       <!-- Card Gift -->
+      <!-- Card Informasi -->
+      @if($gifts && $gifts->count() > 0)
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="card-body">
+          @foreach($gifts as $gift)
+          @if($gift->is_active)
           <h5 class="mb-3 fw-bold">Transfer Hadiah</h5>
           <p><strong>BCA</strong><br>123-456-789<br>a.n. Nama Mempelai</p>
           <button class="btn btn-outline-pink copy-btn" data-account="123456789">
             Salin Nomor Rekening
           </button>
+           @else
+           <h5 class="mb-3 fw-bold">Tanpa Mengurangi Rasa Hormat</h5>
+          <p class="mb-0" style="font-size:1.1rem; line-height:1.7;">
+            Kami dengan tulus memohon agar tidak memberikan sumbangan dalam bentuk apapun.  
+            Kehadiran Anda dalam hari bahagia kami sudah lebih dari cukup,  
+            dan kami ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
+          </p>
+          @endif
+          @endforeach
         </div>
       </div>
-
-      <!-- Card Informasi -->
+    @else
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="p-4 card-body">
           <h5 class="mb-3 fw-bold">Tanpa Mengurangi Rasa Hormat</h5>
@@ -857,6 +846,7 @@
           </p>
         </div>
       </div>
+    @endif
 
       <!-- Card Form -->
       <div class="mb-4 border-0 shadow card" style="border-radius:20px;">

@@ -57,6 +57,16 @@
                                     <td>{{ $galleryImage->sort_order }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Is Background</th>
+                                    <td>
+                                        @if($galleryImage->is_background === 'Y')
+                                            <span class="badge badge-primary">Yes</span>
+                                        @else
+                                            <span class="badge badge-secondary">No</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Created At</th>
                                     <td>{{ $galleryImage->created_at->format('d M Y, H:i') }}</td>
                                 </tr>

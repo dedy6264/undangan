@@ -13,6 +13,7 @@ class GalleryImage extends Model
         'thumbnail_url',
         'description',
         'sort_order',
+        'is_background',
     ];
 
     /**

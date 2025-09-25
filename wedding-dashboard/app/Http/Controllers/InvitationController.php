@@ -254,7 +254,8 @@ class InvitationController extends CrudController
             'weddingEvent.couple.timelineEvents' => function($query) {
                 $query->orderBy('event_date');
             },
-            'weddingEvent.galleryImages'
+            'weddingEvent.galleryImages',
+            'weddingEvent.bankAccounts'
         ])->findOrFail($id);
 
         // Get couple details
@@ -271,14 +272,23 @@ class InvitationController extends CrudController
         // dd($groom,$bride);
         // Get locations for the wedding event
         $location = $invitation->weddingEvent->location;
-        
+        $gifts=$invitation->weddingEvent->bankAccounts;
         // Get gallery images
+        $backgroundImages = $invitation->weddingEvent->galleryImages->where('is_background','Y');
+        //get gallery background image
         $galleryImages = $invitation->weddingEvent->galleryImages;
-        
         // Get timeline events
         $timelineEvents = $couple ? $couple->timelineEvents : collect();
 
+        $bgImage=[];
+        $bgImage = $backgroundImages->pluck('image_url')->toArray();
+        $maxIndex = min(2, count($bgImage) - 1); // contoh: hanya 0 sampai 2
+        $randomIndex = rand(0, $maxIndex);
+        $randomBg = $bgImage[$randomIndex] ?? 'inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg';
+
         return view('invitation_layout.dynamic', [
+            'gifts'=>$gifts,
+            'backgroundImages'=>$randomBg,
             'invitation' => $invitation,
             'couple' => $couple,
             'groom' => $groom,
@@ -287,6 +297,7 @@ class InvitationController extends CrudController
             'galleryImages' => $galleryImages,
             'timelineEvents' => $timelineEvents,
             'guestName' => $invitation->guest->name,
+            'guestId' => $id,
             'weddingEvent' => $invitation->weddingEvent,
         ]);
     }

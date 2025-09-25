@@ -92,7 +92,14 @@
                                             </small>
                                         </p>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">Sort: {{ $galleryImage->sort_order }}</small>
+                                            <small class="text-muted">
+                                                Sort: {{ $galleryImage->sort_order }}
+                                                @if($galleryImage->is_background === 'Y')
+                                                    <span class="badge badge-primary">Background</span>
+                                                @else
+                                                    <span class="badge badge-secondary">Regular</span>
+                                                @endif
+                                            </small>
                                             <div>
                                                 @if(isset($showRoute))
                                                 <a href="{{ route($showRoute, $galleryImage) }}" class="btn btn-sm btn-info">

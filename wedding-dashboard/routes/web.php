@@ -53,6 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/create-order/step4', [OrderController::class, 'step4'])->name('create-order.step4');
     Route::post('/create-order/step4', [OrderController::class, 'processStep4'])->name('create-order.process-step4');
     Route::post('/create-order/cancel', [OrderController::class, 'cancel'])->name('create-order.cancel');
+
+    Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
+    Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
+
 });
 
 // Admin routes (protected by admin middleware)
@@ -72,8 +76,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('bank-accounts', BankAccountController::class);
     Route::resource('guests', GuestController::class);
     Route::resource('invitations', InvitationController::class);
-    Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
-    Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
     Route::get('qr-codes/{id}/invitation-card', [QrCodeController::class, 'showInvitationCard'])->name('qr-codes.invitation-card');
     Route::resource('qr-codes', QrCodeController::class)->only(['index']);
     Route::resource('guest-messages', GuestMessageController::class);

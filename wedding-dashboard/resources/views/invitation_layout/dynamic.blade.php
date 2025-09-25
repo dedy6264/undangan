@@ -38,6 +38,8 @@
       inset: 0;
       z-index: 9999;
       /* background: url({{ asset('storage/cover_image.jpg') }}) 50% 20% /cover no-repeat; You can customize this */
+       background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  50% 20% / cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -202,7 +204,8 @@
       justify-content: center;
       text-align: center;
       color: white;
-      background: url('{{ $location->map_embed_url ? $location->map_embed_url : asset('storage/default_background.jpg') }}') center / cover no-repeat;
+       background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  50% 20% / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
     }
@@ -225,7 +228,8 @@
       /* text-align: center; */
       color: white;
       background: rgba(0,0,0,0.5);
-      background: url('{{ asset('storage/default_background.jpg') }}') center / cover no-repeat;
+  background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       /* background-position: center; */
     }
@@ -615,9 +619,8 @@
 </head>
 
 <body>
-
   <!-- COVER -->
-  <section id="cover" style="background: url('{{  asset('../inv/img/gpt.png') }}')  50% 20% /cover no-repeat;">
+  <section id="cover" >
     <div class="text-center content">
       <h2 class="fw-light">Wedding Invitation</h2>
       <h1 class="fw-bold display-3">{{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }}</h1>
@@ -644,7 +647,7 @@
   </section>
 
   <!-- INFO -->
-  <section id="info" class="fade-section" style="background: url('{{ asset('../inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}') center / cover no-repeat;">
+  <section id="info" class="fade-section" style="background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}') center / cover no-repeat;">
     <div class="container profile-card ">
         <div class="mt-5 row couple fade-content">
             @if($groom)
@@ -658,7 +661,7 @@
                         @endif
                     </div>
                     <div class="col-6">
-                        <img src="{{ $groom->image_url ? $groom->image_url : url('inv/img/gpt2.png') }}" 
+                        <img src="{{ $groom->image_url ? asset($groom->image_url) : asset('inv/img/gpt2.png') }}" 
                              alt="{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}" 
                              class="rounded img-responsive" style="object-position: 70% center; height: 250px; width: 250px; object-fit: cover;">
                     </div>
@@ -684,7 +687,7 @@
             <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
                 <div class="row">
                     <div class="col-6">
-                        <img src="{{ $bride->image_url ? $bride->image_url : url('inv/img/gpt2.png') }}" 
+                        <img src="{{ $bride->image_url ? url($bride->image_url) : url('inv/img/gpt2.png') }}" 
                              alt="{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}" 
                              class="rounded img-responsive" style="object-position: 20% center; height: 250px; width: 250px; object-fit: cover;">
                     </div>
@@ -707,7 +710,7 @@
                     </div>
                     <div class=" col-6 text-start">
                         <h3>{{ $couple->bride_name }}</h3>
-                        <p>Daughter of Mr. and Mrs.</p>
+                        <p>Daughter of Mr. and Mrsxxxxx</p>
                     </div>
                 </div>
             </div>
@@ -726,7 +729,7 @@
     <div class="row fade-content">
       @foreach($galleryImages as $image)
       <div class="col-sm-4 gallery-item">
-        <img src="{{ $image->image_url }}" class="img-fluid" style="border-radius:15px; height: 250px; object-fit: cover;">
+        <img src="{{ url($image->image_url) }}" class="img-fluid" style="border-radius:15px; height: 250px; object-fit: cover;">
         @if($image->description)
         <div class="overlay">
           <p>{{ $image->description }}</p>
@@ -739,6 +742,7 @@
   @endif
 
   <!-- LOCATION -->
+  {{-- @dd($location) --}}
   @if($location)
   <section id="location" class="fade-section">
     <div class="container text-center fade-content">
@@ -753,7 +757,7 @@
           </div>
           <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
             @if($location->map_embed_url)
-            <iframe src="{{ $location->map_embed_url }}" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            {!! $location->map_embed_url !!}
             @else
             <p>Location details will be updated soon</p>
             @endif
@@ -800,13 +804,13 @@
       @if($index % 2 == 0)
       <ul class="timeline">
         <li>
-          <div class="timeline-image" style="background-image: url('{{ $event->image_url ? $event->image_url : asset('storage/default_timeline_image.jpg') }}');"></div>
+          <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('storage/default_timeline_image.jpg') }}');"></div>
           <div class="timeline-panel">
             <div class="timeline-heading">
               <span class="date">{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
             </div>
             <div class="timeline-body">
-              <h3>{{ $event->title }}</h3>
+              <h4>{{ $event->title }}</h4>
               <p>{{ $event->description }}</p>
             </div>
           </div>
@@ -815,7 +819,7 @@
       @else
       <ul class="timeline">
         <li class="timeline-inverted">
-            <div class="timeline-image" style="background-image: url('{{ $event->image_url ? $event->image_url : asset('storage/default_timeline_image.jpg') }}');"></div>
+            <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('storage/default_timeline_image.jpg') }}');"></div>
             <div class="timeline-panel">
                 <div class="timeline-heading">
                     <span>{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
@@ -840,16 +844,28 @@
       <p class="mb-5 text-center">Doa restu Anda sudah merupakan hadiah terbaik bagi kami. Namun jika ingin memberikan tanda kasih, dapat melalui rekening berikut:</p>
 
       <!-- Card Gift -->
+    @if($gifts && $gifts->count() > 0)
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="card-body">
+          @foreach($gifts as $gift)
+          @if($gift->is_active)
           <h5 class="mb-3 fw-bold">Transfer Hadiah</h5>
-          <p><strong>BCA</strong><br>123-456-789<br>a.n. {{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }}</p>
+          <p><strong>{{ $gift->bank_name ?? 'BANK --' }}</strong><br>{{ $gift->account_number ?? '001-001.....' }}<br>a.n. {{ $gift->account_holder_name ?? 'Groom' }} </p>
           <button class="btn btn-outline-pink copy-btn" data-account="123456789">
             Salin Nomor Rekening
           </button>
+          @else
+           <h5 class="mb-3 fw-bold">Tanpa Mengurangi Rasa Hormat</h5>
+          <p class="mb-0" style="font-size:1.1rem; line-height:1.7;">
+            Kami dengan tulus memohon agar tidak memberikan sumbangan dalam bentuk apapun.  
+            Kehadiran Anda dalam hari bahagia kami sudah lebih dari cukup,  
+            dan kami ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
+          </p>
+          @endif
+          @endforeach
         </div>
       </div>
-
+    @else
       <!-- Card Informasi -->
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="p-4 card-body">
@@ -857,11 +873,11 @@
           <p class="mb-0" style="font-size:1.1rem; line-height:1.7;">
             Kami dengan tulus memohon agar tidak memberikan sumbangan dalam bentuk apapun.  
             Kehadiran Anda dalam hari bahagia kami sudah lebih dari cukup,  
-            dan kami hanya ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
+            dan kami ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
           </p>
         </div>
       </div>
-
+    @endif
       <!-- Card Form -->
       <div class="mb-4 border-0 shadow card" style="border-radius:20px;">
         <div class="card-body">
