@@ -257,7 +257,8 @@ class InvitationController extends CrudController
                 $query->orderBy('event_date');
             },
             'weddingEvent.galleryImages',
-            'weddingEvent.bankAccounts'
+            'weddingEvent.bankAccounts',
+            'weddingEvent.guestMessages'
         ])->findOrFail($id);
 
         // Get couple details
@@ -288,8 +289,8 @@ class InvitationController extends CrudController
         $randomIndex = rand(0, $maxIndex);
         $randomBg = $bgImage[$randomIndex] ?? 'inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg';
 
-        // return view('invitation_layout.dynamic', [
-        return view('invitation_layout.index', [
+        return view('invitation_layout.dynamic', [
+        // return view('invitation_layout.index', [
             'gifts'=>$gifts,
             'backgroundImages'=>$randomBg,
             'invitation' => $invitation,
@@ -302,6 +303,7 @@ class InvitationController extends CrudController
             'guestName' => $invitation->guest->name,
             'guestId' => $id,
             'weddingEvent' => $invitation->weddingEvent,
+            'guestMessages'=>$invitation->weddingEvent->guestMessages,
         ]);
     }
 }

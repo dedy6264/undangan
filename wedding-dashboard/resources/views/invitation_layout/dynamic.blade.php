@@ -4,10 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }} Wedding</title>
+  <title>Agus & Joy Intimate Wedding</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{url('simplycountdown/dist/themes/dark.css')}}" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <style>
     :root {
     --pink: #f14e95;
@@ -37,8 +37,8 @@
       position: fixed;
       inset: 0;
       z-index: 9999;
-      /* background: url({{ asset('storage/cover_image.jpg') }}) 50% 20% /cover no-repeat; You can customize this */
-       background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+      /* background: url(../inv/img/gpt.png) 50% 20% /cover no-repeat; 40% 20% atau center untuk mengatur posisi gambar */
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
                   50% 20% / cover no-repeat;
       display: flex;
       align-items: center;
@@ -105,7 +105,9 @@
       /* justify-content: center; */
       text-align: center;
       color: white;
-      /* background: url('{{ $groom && $groom->image_url ? $groom->image_url : asset('storage/default_background.jpg') }}') center / cover no-repeat; */
+      /* background: url('../inv/img/gpt1.png')  center / cover no-repeat; */
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt1.png') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
     }
@@ -131,7 +133,8 @@
       justify-content: center;
       text-align: center;
       color: white;
-      /* background: url('{{ $bride && $bride->image_url ? $bride->image_url : asset('storage/default_background.jpg') }}') center / cover no-repeat; */
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
       opacity: 0.8;
@@ -204,8 +207,8 @@
       justify-content: center;
       text-align: center;
       color: white;
-       background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
-                  50% 20% / cover no-repeat;
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt.png') }}')
+                  center / cover no-repeat;
       background-attachment: fixed; /* 🎯 ini yang bikin statik */
       background-position: center;
     }
@@ -214,13 +217,34 @@
       font-family: "Lavishly Yours", cursive;
     }
       
+    /* Responsive map */
+    #location .map-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;   /* biar map ga terlalu lebar di desktop */
+      margin: 0 auto;
+      padding-bottom: 56.25%; /* rasio 16:9 */
+      height: 0;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    #location .map-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
     /* Story */
     #story { 
       padding-top: 8rem;
       padding-bottom: 8rem;
       position: relative;
-      min-height: 100vh;          /* selalu penuh 1 layar */
-      /* max-height: 90vh;          /* selalu penuh 1 layar */
+      min-height: 100vh;          selalu penuh 1 layar
+      /* max-height: 90vh;          selalu penuh 1 layar */
       width: 100%;      
       /* display: flex; */
       /* align-items: center; */
@@ -228,9 +252,9 @@
       /* text-align: center; */
       color: white;
       background: rgba(0,0,0,0.5);
-  background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}')
+      background: url('{{ asset($backgroundImages) ?? asset('inv/img/gpt.png') }}')
                   center / cover no-repeat;
-      background-attachment: fixed; /* 🎯 ini yang bikin statik */
+      background-attachment: fixed; 🎯 ini yang bikin statik
       /* background-position: center; */
     }
     #story h2 {
@@ -377,6 +401,8 @@
       background: linear-gradient(135deg, #1c1c1c, #2e2e2e); /* elegan gelap */
       color: #fff;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+       position: relative; /* penting supaya pseudo bisa nempel */
+      overflow: hidden; /* supaya coakan rapi */
     }
 
     #reservation .card-left {
@@ -542,6 +568,61 @@
           width: calc(100% - 180px);
           float: right;
       }
+      #reservation .invitation-card {
+        grid-template-columns: 1fr; /* dari 2 kolom jadi 1 */
+        padding: 20px;
+      }
+
+      /* Coakan kiri */
+      #reservation .invitation-card::before {
+        content: "";
+        position: absolute;
+        top: 49%;
+        left: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc; /* sama dengan background section */
+        border-radius: 50%;
+      }
+
+      /* Coakan kanan */
+      #reservation .invitation-card::after {
+        content: "";
+        position: absolute;
+        top: 49%;
+        right: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc;
+        border-radius: 50%;
+      }
+      #reservation .card-left {
+        border-right: none;       /* hilangkan garis pemisah */
+        border-bottom: 2px dashed rgba(255,255,255,0.2); /* ganti jadi garis bawah */
+        padding: 20px;
+        padding-bottom: 30px;
+      }
+
+      #reservation .card-left img {
+        width: 180px; /* kecilkan QR code */
+        height: 180px;
+      }
+
+      #reservation .card-right {
+        padding-left: 0;
+        margin-top: 20px;
+        text-align: center; /* center-kan teks di mobile */
+      }
+
+      #reservation .invite-header {
+        font-size: 20px;
+      }
+
+      #reservation .invite-detail {
+        font-size: 14px;
+      }
     }
     @media(max-width: 576px) {
       .profile-card {
@@ -583,6 +664,36 @@
           float: right;
           padding: 10px;
       }
+      #reservation .card-left img {
+        width: 150px;
+        height: 150px;
+      }
+
+      /* Coakan kiri */
+      #reservation .invitation-card::before {
+        content: "";
+        position: absolute;
+        top: 46%;
+        left: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc; /* sama dengan background section */
+        border-radius: 50%;
+      }
+
+      /* Coakan kanan */
+      #reservation .invitation-card::after {
+        content: "";
+        position: absolute;
+        top: 46%;
+        right: -15px; /* keluar sedikit dari card */
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background: #ccc;
+        border-radius: 50%;
+      }
     }
    
     /* Fade-in base */
@@ -619,8 +730,9 @@
 </head>
 
 <body>
+
   <!-- COVER -->
-  <section id="cover" >
+  <section id="cover">
     <div class="text-center content">
       <h2 class="fw-light">Wedding Invitation</h2>
       <h1 class="fw-bold display-3">{{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }}</h1>
@@ -632,8 +744,8 @@
   </section>
 
   <!-- HEAD -->
-  <section id="head" class="text-center bg-light fade-section" style="background: url('{{  asset('../inv/img/gpt1.png') }}') center / cover no-repeat;">
-    <div class="fade-content">
+  <section id="head" class="text-center bg-light fade-section">
+    {{-- <div class="fade-content"> --}}
         <div class="head-top fade-content">
             <h2 class="fw-light">Wedding Invitation</h2>
             <h1 class="fw-bold display-3">{{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }}'s</h1>
@@ -643,79 +755,46 @@
             <p class="fs-4 ">With the blessing of God, we joyfully invite you to our wedding celebration</p>
         </div>
         <div class="mt-4 countdown simply-countdown-dark fade-content"></div>
-    </div>
+    {{-- </div> --}}
   </section>
 
   <!-- INFO -->
-  <section id="info" class="fade-section" style="background: url('{{ asset($backgroundImages) ?? asset('inv/img/tushar-ranjan-GqpGd6NtUoI-unsplash.jpg') }}') center / cover no-repeat;">
+  <section id="info" class="fade-section">
     <div class="container profile-card ">
         <div class="mt-5 row couple fade-content">
-            @if($groom)
-            <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                <div class="row">
-                    <div class=" col-6 text-end">
-                        <h3>{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}</h3>
-                        <p>{{ $groom->additional_info ? $groom->additional_info : 'Son of Mr. and Mrs.' }}</p>
-                        @if($groom->personParent)
-                        <p>Son of {{ $groom->personParent->father_name ?? 'Father' }} & {{ $groom->personParent->mother_name ?? 'Mother' }}</p>
-                        @endif
-                    </div>
-                    <div class="col-6">
-                        <img src="{{ $groom->image_url ? asset($groom->image_url) : asset('inv/img/gpt2.png') }}" 
-                             alt="{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}" 
-                             class="rounded img-responsive" style="object-position: 70% center; height: 250px; width: 250px; object-fit: cover;">
-                    </div>
-                </div>
-            </div>
-            @elseif($couple && $couple->groom_name)
-            <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                <div class="row">
-                    <div class=" col-6 text-end">
-                        <h3>{{ $couple->groom_name }}</h3>
-                        <p>Son of Mr. and Mrs.</p>
-                    </div>
-                    <div class="col-6">
-                        <img src="{{ url('inv/img/gpt2.png') }}" 
-                             alt="{{ $couple->groom_name }}" 
-                             class="rounded img-responsive" style="object-position: 70% center; height: 250px; width: 250px; object-fit: cover;">
+           @if($groom)
+                <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
+                    <div class="row">
+                        <div class=" col-6 text-end">
+                            <h3>{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}</h3>
+                            <p>{{ $groom->additional_info ? $groom->additional_info : 'Son of Mr. and Mrs.' }}</p>
+                            @if($groom->personParent)
+                            <p>Son of {{ $groom->personParent->father_name ?? 'Father' }} & {{ $groom->personParent->mother_name ?? 'Mother' }}</p>
+                            @endif
+                        </div>
+                        <div class="col-6">
+                            <img src="{{ $groom->image_url ? asset($groom->image_url) : asset('inv/img/gpt2.png') }}"  alt="{{ $groom->full_name ?? $couple->groom_name ?? 'Groom' }}"  class="rounded img-responsive " style="object-position: 70% center; ">
+                        </div>
                     </div>
                 </div>
-            </div>
             @endif
-
             @if($bride)
-            <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                <div class="row">
-                    <div class="col-6">
-                        <img src="{{ $bride->image_url ? url($bride->image_url) : url('inv/img/gpt2.png') }}" 
-                             alt="{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}" 
-                             class="rounded img-responsive" style="object-position: 20% center; height: 250px; width: 250px; object-fit: cover;">
-                    </div>
-                    <div class=" col-6 text-start">
-                        <h3>{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}</h3>
+                <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="{{ $bride->image_url ? url($bride->image_url) : url('inv/img/gpt3.png') }}"  alt="{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}" class="rounded img-responsive " style="object-position: 20% center;  ">
+                        </div>
+                        <div class=" col-6 text-start">
+                            <h3>{{ $bride->full_name ?? $couple->bride_name ?? 'Bride' }}</h3>
                         <p>{{ $bride->additional_info ? $bride->additional_info : 'Daughter of Mr. and Mrs.' }}</p>
                         @if($bride->personParent)
                         <p>Daughter of {{ $bride->personParent->father_name ?? 'Father' }} & {{ $bride->personParent->mother_name ?? 'Mother' }}</p>
                         @endif
+                        </div>
                     </div>
                 </div>
-            </div>
-            @elseif($couple && $couple->bride_name)
-            <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-                <div class="row">
-                    <div class="col-6">
-                        <img src="{{ url('inv/img/gpt2.png') }}" 
-                             alt="{{ $couple->bride_name }}" 
-                             class="rounded img-responsive" style="object-position: 20% center; height: 250px; width: 250px; object-fit: cover;">
-                    </div>
-                    <div class=" col-6 text-start">
-                        <h3>{{ $couple->bride_name }}</h3>
-                        <p>Daughter of Mr. and Mrsxxxxx</p>
-                    </div>
-                </div>
-            </div>
             @endif
-        </div>
+            </div>
     </div>
   </section>
 
@@ -728,41 +807,40 @@
     </div>
     <div class="row fade-content">
       @foreach($galleryImages as $image)
-      <div class="col-sm-4 gallery-item">
-        <img src="{{ url($image->image_url) }}" class="img-fluid" style="border-radius:15px; height: 250px; object-fit: cover;">
-        @if($image->description)
-        <div class="overlay">
-          <p>{{ $image->description }}</p>
-        </div>
-        @endif
-      </div>
+        <a href="{{ url($image->image_url) }}" data-toggle="lightbox" data-gallery="example-gallery" data-size="lg"  class="col-sm-4 gallery-item">
+            <img src="{{ url($image->image_url) }}" class="img-fluid" style="border-radius:15px">
+            @if($image->description)
+            <div class="overlay">
+              <p>{{ $image->description }}</p>
+            </div>
+            @endif
+        </a>
       @endforeach
     </div>
   </section>
   @endif
-
+  
   <!-- LOCATION -->
-  {{-- @dd($location) --}}
   @if($location)
   <section id="location" class="fade-section">
     <div class="container text-center fade-content">
       <div class="container profile-card ">
         <h2>Wedding Celebration</h2>
         <div class="mt-5 row couple fade-content">
-          <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-            <h3>{{ \Carbon\Carbon::parse($weddingEvent->event_date)->format('l, d F Y') }}</h3>
-            <p>{{ $weddingEvent->event_time }} - End</p>
-            <h3>{{ $location->venue_name }}</h3>
-            <h3>{{ $location->address }}</h3>
-          </div>
-          <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
-            @if($location->map_embed_url)
-            {!! $location->map_embed_url !!}
-            @else
-            <p>Location details will be updated soon</p>
-            @endif
-          </div>
-        </div>
+                <div class="col-lg-6 fade-content" style="margin-top: 12px !important; margin-bottom: 12px !important;">
+                  <h3>{{ \Carbon\Carbon::parse($weddingEvent->event_date)->format('l, d F Y') }}</h3>
+                  <p>{{ $weddingEvent->event_time }} - End</p>
+                  <h3>{{ $location->venue_name }}</h3>
+                  <h3>{{ $location->address }}</h3>
+                </div>
+                <div class="col-lg-6 fade-content map-container" style="margin-top: 12px !important; margin-bottom: 12px !important;">
+                  @if($location->map_embed_url)
+                  {!! $location->map_embed_url !!}
+                  @else
+                  <p>Location details will be updated soon</p>
+                  @endif
+                </div>
+            </div>
       </div>
     </div>
   </section>
@@ -774,14 +852,14 @@
       <h2 class="mb-4">Your Invitation</h2>
     </div>
     <div class="invitation-card">
-      <!-- Bagian kiri: Barcode -->
+    <!-- Bagian kiri: Barcode -->
       <div class="card-left">
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ route('invitation.show', ['id' => $invitation->id]) }}" 
             alt="Reservation Barcode" />
         <p class="code">Kode: {{ $invitation->invitation_code }}</p>
       </div>
 
-      <!-- Bagian kanan: Informasi Undangan -->
+    <!-- Bagian kanan: Informasi Undangan -->
       <div class="card-right">
         <h2 class="invite-header">Undangan Spesial</h2>
         <h2 class="invite-detail"><strong>Kepada</strong><br> {{ $guestName }}</h2>
@@ -802,37 +880,36 @@
     <div class="container profile-card">
       @foreach($timelineEvents as $index => $event)
       @if($index % 2 == 0)
-      <ul class="timeline">
-        <li>
-          <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('storage/default_timeline_image.jpg') }}');"></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <span class="date">{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
-            </div>
-            <div class="timeline-body">
-              <h4>{{ $event->title }}</h4>
-              <p>{{ $event->description }}</p>
-            </div>
-          </div>
-        </li>
-      </ul>
-      @else
-      <ul class="timeline">
-        <li class="timeline-inverted">
-            <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('storage/default_timeline_image.jpg') }}');"></div>
+        <ul class="timeline">
+          <li>
+            <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('inv/img/gpt2.png') }}') ;"></div>
             <div class="timeline-panel">
-                <div class="timeline-heading">
+              <div class="timeline-heading">
+                <span class="date">{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
+              </div>
+              <div class="timeline-body">
+                {{-- <h4>{{ $event->title }}</h4> --}}
+                <p>{{ $event->description }}</p>
+              </div>
+          </li>
+        </ul>
+      @else
+        <ul class="timeline">
+          <li class="timeline-inverted">
+              <div class="timeline-image" style="background-image: url('{{ $event->image_url ? asset($event->image_url) : asset('inv/img/gpt2.png') }}');"></div>
+              <div class="timeline-panel">
+                  <div class="timeline-heading">
                     <span>{{ \Carbon\Carbon::parse($event->event_date)->format('F Y') }}</span>
-                </div>
-                <div class="timeline-body">
-                  <h3>{{ $event->title }}</h3>
-                  <p>{{ $event->description }}</p>
-                </div>
-            </div>
-        </li>
-      </ul>
-      @endif
-      @endforeach
+                  </div>
+                  <div class="timeline-body">
+                    {{-- <h4>{{ $event->title }}</h4> --}}
+                    <p>{{ $event->description }}</p>
+                  </div>
+              </div>
+          </li>
+        </ul>
+        @endif
+        @endforeach
     </div>
   </section>
   @endif
@@ -844,17 +921,18 @@
       <p class="mb-5 text-center">Doa restu Anda sudah merupakan hadiah terbaik bagi kami. Namun jika ingin memberikan tanda kasih, dapat melalui rekening berikut:</p>
 
       <!-- Card Gift -->
-    @if($gifts && $gifts->count() > 0)
+      <!-- Card Informasi -->
+      @if($gifts && $gifts->count() > 0)
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="card-body">
           @foreach($gifts as $gift)
           @if($gift->is_active)
           <h5 class="mb-3 fw-bold">Transfer Hadiah</h5>
-          <p><strong>{{ $gift->bank_name ?? 'BANK --' }}</strong><br>{{ $gift->account_number ?? '001-001.....' }}<br>a.n. {{ $gift->account_holder_name ?? 'Groom' }} </p>
+          <p><strong>BCA</strong><br>123-456-789<br>a.n. Nama Mempelai</p>
           <button class="btn btn-outline-pink copy-btn" data-account="123456789">
             Salin Nomor Rekening
           </button>
-          @else
+           @else
            <h5 class="mb-3 fw-bold">Tanpa Mengurangi Rasa Hormat</h5>
           <p class="mb-0" style="font-size:1.1rem; line-height:1.7;">
             Kami dengan tulus memohon agar tidak memberikan sumbangan dalam bentuk apapun.  
@@ -866,18 +944,18 @@
         </div>
       </div>
     @else
-      <!-- Card Informasi -->
       <div class="mb-5 text-center border-0 shadow-lg card" style="border-radius:20px;">
         <div class="p-4 card-body">
           <h5 class="mb-3 fw-bold">Tanpa Mengurangi Rasa Hormat</h5>
           <p class="mb-0" style="font-size:1.1rem; line-height:1.7;">
             Kami dengan tulus memohon agar tidak memberikan sumbangan dalam bentuk apapun.  
             Kehadiran Anda dalam hari bahagia kami sudah lebih dari cukup,  
-            dan kami ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
+            dan kami hanya ingin berbagi kebahagiaan bersama orang-orang yang kami cintai. 💕
           </p>
         </div>
       </div>
     @endif
+
       <!-- Card Form -->
       <div class="mb-4 border-0 shadow card" style="border-radius:20px;">
         <div class="card-body">
@@ -885,7 +963,6 @@
           <form id="giftForm">
             <div class="mb-3">
               <input type="text" class="form-control" name="nama" id="guestNameInput" placeholder="Nama Anda" value="{{ $guestName ?? '' }}" required readonly>
-              <small class="text-muted">Nama Anda akan terisi otomatis sesuai undangan</small>
             </div>
             <div class="mb-3">
               <textarea class="form-control" name="pesan" rows="3" placeholder="Tulis pesan & doa..." required></textarea>
@@ -901,15 +978,7 @@
       <div class="mt-4 messages">
         <h5 class="mb-4 text-center">Pesan & Doa</h5>
         <div id="messageList" class="gap-3 messageList d-flex flex-column">
-          <!-- Contoh Pesan -->
-          <div class="p-3 border-0 shadow-sm card">
-            <strong>Andi:</strong>
-            <p class="mb-0">Selamat menempuh hidup baru, semoga bahagia selalu!</p>
-          </div>
-          <div class="p-3 border-0 shadow-sm card">
-            <strong>Bella:</strong>
-            <p class="mb-0">Doa terbaik untuk kalian berdua 💕</p>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -917,12 +986,11 @@
 
   <!-- FOOTER -->
   <footer class="p-3 text-center text-white bg-dark">
-    <p class="mb-0">© {{ \Carbon\Carbon::now()->year }} {{ $couple->groom_name ?? 'Groom' }} & {{ $couple->bride_name ?? 'Bride' }} Wedding Invitation | Powered by Digital Invitation</p>
+    <p class="mb-0">© 2025 Agus & Joy Wedding Invitation | Powered by Digital Invitation</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    //cover open
+  <script>//cover open
     const cover = document.getElementById('cover');
     const openBtn = document.getElementById('openBtn');
 
@@ -956,7 +1024,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.5/dist/index.bundle.min.js"></script>
   <script src="{{url('simplycountdown/dist/simplyCountdown.umd.js')}}"></script>
- <script>//countdown
+  <script>//countdown
         simplyCountdown(".countdown", {
             year: 2025,
             month: 12,
@@ -982,8 +1050,7 @@
             },
         });
   </script>
-  <script>
-    // Copy rekening
+  <script>// Copy rekening
     document.querySelectorAll(".copy-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           navigator.clipboard.writeText(this.dataset.account);
@@ -992,7 +1059,7 @@
         });
       });
 
-      // Load existing messages when page loads
+     // Load existing messages when page loads
       function loadMessages() {
         fetch('/guest-messages')
           .then(response => response.json())
