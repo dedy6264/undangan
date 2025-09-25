@@ -1,4 +1,13 @@
-1.perbaharui alur create order setelah pilih package langsung ke tahap create couple dan seterusnya, untuk data client ambil dari auth sesuai yang sedang di gunakan untuk login
+1. pada invitation, buatkan buttonn send invitation by invitation id untuk kirim melakukan kirim undangan ke whatsapp dengan spesifikasi seperti berikut
+request:
+{
+	"target":"",//no telepon guest
+	"message":""//link untuk mengakses undangan reference ke invitation
+}
+url:https://api.fonnte.com/send
+token: LyfkJ2o1LA8wER8RiMBe
+jika sukses merikan notif atau alert sukses
+2. buat api untuk open invitasi by invitation id untuk menampilkan undangan digital, untuk template sudah ada di wedding-dashboard/resource/view/invitation_layout
 
 1. Struktur database:
 -- =========================
@@ -97,6 +106,7 @@ CREATE TABLE gallery_images (
     thumbnail_url VARCHAR(255),
     description TEXT,
     sort_order INT DEFAULT 0,
+    is_background VARCHAR(1) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (wedding_event_id) REFERENCES wedding_events(id) ON DELETE CASCADE
@@ -211,6 +221,7 @@ CREATE TABLE transactions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     couple_id INT NOT NULL,
     package_id INT NOT NULL,
+    reference_no VARCHAR(13) NOT NULL UNIQUE,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(20) DEFAULT 'pending', -- pending, paid, expired, cancelled
     total_amount DECIMAL(12,2) NOT NULL,
