@@ -14,7 +14,7 @@ class PersonController extends CrudController
     public function __construct()
     {
         $this->model = Person::class;
-        $this->routePrefix = 'people';
+        $this->routePrefix = auth()->user()->role=="client" ?'my-people':'people';
         $this->columns = ['id', 'couple_id', 'role', 'full_name', 'image_url', 'created_at', 'updated_at'];
     }
     
@@ -29,6 +29,10 @@ class PersonController extends CrudController
         return view('people.index', [
             'people' => $people,
             'title' => $title,
+             'createRoute' => route($this->routePrefix.'.create'),
+            'editRoute' => $this->routePrefix.'.edit',
+            'showRoute' => $this->routePrefix.'.show',
+            'deleteRoute' => $this->routePrefix.'.destroy',
         ]);
     }
 
@@ -39,8 +43,9 @@ class PersonController extends CrudController
     {
         $title = 'Create Person';
         $couples = Couple::all();
-        
-        return view('people.create', compact('title', 'couples'));
+        $storeRoute = route($this->routePrefix.'.store');
+        $indexRoute = route($this->routePrefix.'.index');
+        return view('people.create', compact('title', 'couples','storeRoute','indexRoute'));
     }
 
     /**
@@ -103,7 +108,7 @@ class PersonController extends CrudController
             );
         }
 
-        return redirect()->route('people.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Person created successfully.');
     }
 
@@ -114,8 +119,11 @@ class PersonController extends CrudController
     {
         $record = Person::with(['couple', 'personParent'])->findOrFail($id);
         $title = 'View Person';
-        
-        return view('people.show', compact('record', 'title'));
+        $indexRoute = route($this->routePrefix.'.index');
+        $editRoute = $this->routePrefix.'.edit';
+        $locationRoute = $this->locationRoutePrefix;
+        $galleryImageRoute = $this->galleryRoutePrefix;
+        return view('people.show', compact('record', 'title','indexRoute','editRoute','locationRoute','galleryImageRoute'));
     }
 
     /**
@@ -126,8 +134,9 @@ class PersonController extends CrudController
         $record = Person::with(['couple', 'personParent'])->findOrFail($id);
         $title = 'Edit Person';
         $couples = Couple::all();
-        
-        return view('people.edit', compact('record', 'title', 'couples'));
+        $indexRoute = route($this->routePrefix.'.index');
+        $updateRoute = route($this->routePrefix.'.update', $record->id);
+        return view('people.edit', compact('record', 'title', 'couples','indexRoute','updateRoute'));
     }
 
     /**
@@ -199,7 +208,7 @@ class PersonController extends CrudController
             PersonParent::where('person_id', $record->id)->delete();
         }
 
-        return redirect()->route('people.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Person updated successfully.');
     }
 
@@ -211,7 +220,7 @@ class PersonController extends CrudController
         $record = Person::findOrFail($id);
         $record->delete();
 
-        return redirect()->route('people.index')
+        return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Person deleted successfully.');
     }
 }

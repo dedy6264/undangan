@@ -169,4 +169,125 @@ class InvitationController extends CrudController
         return redirect()->route($this->routePrefix.'.index')
             ->with('success', 'Invitation deleted successfully.');
     }
+    
+    /**
+     * Send invitation via WhatsApp
+     */
+    public function sendInvitation($id)
+    {
+        $invitation = Invitation::with(['guest', 'weddingEvent.couple'])->findOrFail($id);
+        
+        // Get the guest's phone number
+        $target = $invitation->guest->phone;
+        
+        // Generate the invitation link
+        $invitationLink = route('invitation.show', ['id' => $invitation->id]);
+        
+        // Create the message
+        $message = "Undangan Pernikahan:\n\n" . 
+                  "Kepada: " . $invitation->guest->name . "\n" .
+                  "Acara: " . $invitation->weddingEvent->event_name . "\n\n" .
+                  "Silakan klik tautan berikut untuk melihat undangan:\n" .
+                  $invitationLink . "\n\n" .
+                  "Terima kasih.";
+        
+        // Prepare request to Fonnte API
+        $data = [
+            'target' => $target,
+            'message' => $message,
+        ];
+        
+        // Initialize cURL
+        $curl = curl_init();
+        
+        curl_setopt_array($curl, [
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: LyfkJ2o1LA8wER8RiMBe' // Your Fonnte token
+            ],
+        ]);
+        
+        $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        $responseData = json_decode($response, true);
+        // dd($responseData);
+        
+        if ($httpCode === 200 && isset($responseData['status']) && $responseData['status'] == true) {
+            // Success
+            return response()->json([
+                'success' => true,
+                'message' => 'Invitation sent successfully via WhatsApp',
+                'response' => $responseData
+            ]);
+        } else {
+            // Error
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send invitation via WhatsApp',
+                'error' => $responseData ?? $response
+            ], 400);
+        }
+    }
+    
+    /**
+     * Display the invitation by ID using the invitation layout
+     */
+    public function showInvitation($id)
+    {
+        $invitation = Invitation::with([
+            'guest',
+            'weddingEvent',
+            'weddingEvent.couple',
+            'weddingEvent.location',
+            'weddingEvent.couple.persons' => function($query) {
+                $query->with('personParent')->orderBy('role');
+            },
+            'weddingEvent.couple.timelineEvents' => function($query) {
+                $query->orderBy('event_date');
+            },
+            'weddingEvent.galleryImages'
+        ])->findOrFail($id);
+
+        // Get couple details
+        $couple = $invitation->weddingEvent->couple;
+        
+        // Get groom and bride info
+        $groom = null;
+        $bride = null;
+        
+        if ($couple && $couple->persons) {
+            $groom = $couple->persons->firstWhere('role', 'groom');
+            $bride = $couple->persons->firstWhere('role', 'bride');
+        }
+        // dd($groom,$bride);
+        // Get locations for the wedding event
+        $location = $invitation->weddingEvent->location;
+        
+        // Get gallery images
+        $galleryImages = $invitation->weddingEvent->galleryImages;
+        
+        // Get timeline events
+        $timelineEvents = $couple ? $couple->timelineEvents : collect();
+
+        return view('invitation_layout.dynamic', [
+            'invitation' => $invitation,
+            'couple' => $couple,
+            'groom' => $groom,
+            'bride' => $bride,
+            'location' => $location,
+            'galleryImages' => $galleryImages,
+            'timelineEvents' => $timelineEvents,
+            'guestName' => $invitation->guest->name,
+            'weddingEvent' => $invitation->weddingEvent,
+        ]);
+    }
 }

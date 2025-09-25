@@ -60,6 +60,15 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             @endif
+                                            <!-- Send Invitation Button -->
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-success send-invitation-btn" 
+                                                    data-invitation-id="{{ $invitation->id }}"
+                                                    data-guest-name="{{ $invitation->guest->name ?? 'Guest' }}"
+                                                    data-csrf-token="{{ csrf_token() }}"
+                                                    title="Send invitation via WhatsApp">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </button>
                                             @if(isset($deleteRoute))
                                             <form action="{{ route($deleteRoute, $invitation) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this invitation?');">
                                                 @csrf
@@ -94,6 +103,58 @@
 
 <!-- Page level custom scripts -->
 <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle send invitation button clicks
+    document.querySelectorAll('.send-invitation-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const invitationId = this.getAttribute('data-invitation-id');
+            const guestName = this.getAttribute('data-guest-name');
+            const csrfToken = this.getAttribute('data-csrf-token');
+            
+            // Confirm with user before sending
+            if (confirm(`Are you sure you want to send invitation to ${guestName} via WhatsApp?`)) {
+                // Show loading state
+                const originalHtml = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                this.disabled = true;
+                
+                // Make AJAX request
+                fetch(`/invitations/${invitationId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Restore button
+                    this.innerHTML = originalHtml;
+                    this.disabled = false;
+                    
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message);
+                    } else {
+                        // Show error message
+                        alert('Error: ' + (data.message || 'Failed to send invitation'));
+                    }
+                })
+                .catch(error => {
+                    // Restore button
+                    this.innerHTML = originalHtml;
+                    this.disabled = false;
+                    
+                    console.error('Error:', error);
+                    alert('An error occurred while sending the invitation.');
+                });
+            }
+        });
+    });
+});
+</script>
 @endsection
 
 @section('styles')

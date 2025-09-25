@@ -24,7 +24,9 @@ use App\Http\Controllers\{
     ProfileController,
     OrderController
 };
-
+Route::get('/invitation',function(){
+    return view('invitation_layout.index');
+});
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
@@ -70,6 +72,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('bank-accounts', BankAccountController::class);
     Route::resource('guests', GuestController::class);
     Route::resource('invitations', InvitationController::class);
+    Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
+    Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
     Route::get('qr-codes/{id}/invitation-card', [QrCodeController::class, 'showInvitationCard'])->name('qr-codes.invitation-card');
     Route::resource('qr-codes', QrCodeController::class)->only(['index']);
     Route::resource('guest-messages', GuestMessageController::class);
@@ -99,6 +103,7 @@ Route::middleware(['auth', 'client'])->group(function () {
     Route::resource('my-couples', CoupleController::class);
     Route::get('my-couples/{couple}/select-payment', [CoupleController::class, 'selectPayment'])->name('my-couples.select-payment');
     Route::post('my-couples/{couple}/process-payment', [CoupleController::class, 'processPayment'])->name('my-couples.process-payment');
+    Route::resource('my-people', PersonController::class);
     Route::resource('my-wedding-events', WeddingEventController::class);
     Route::resource('my-gallery-images', GalleryImageController::class);
     Route::resource('my-timeline-events', TimelineEventController::class);

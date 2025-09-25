@@ -4,29 +4,30 @@
 
 @section('content')
 <!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Edit Person</h1>
+<div class="mb-4 d-sm-flex align-items-center justify-content-between">
+    <h1 class="mb-0 text-gray-800 h3">Edit Person</h1>
 </div>
 
 <!-- Content Row -->
 <div class="row">
     <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="mb-4 shadow card">
+            <div class="py-3 card-header">
                 <h6 class="m-0 font-weight-bold text-primary">Person Details</h6>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ route('people.update', $record->id) }}" enctype="multipart/form-data">
+                @if(isset($updateRoute))
+                <form method="POST" action="{{ route($updateRoute, $record->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="person_index">Person Index</label>
                         <input type="text" name="person_index" id="person_index" class="form-control" value="{{ old('person_index', $record->person_index) }}" readonly>
                         <small class="form-text text-muted">Auto-generated from client ID and role</small>
                     </div>
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="couple_id">Couple</label>
                         <select name="couple_id" id="couple_id" class="form-control" required>
                             <option value="">Select Couple</option>
@@ -41,7 +42,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="role">Role</label>
                         <select name="role" id="role" class="form-control" required>
                             <option value="">Select Role</option>
@@ -53,7 +54,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="full_name">Full Name</label>
                         <input type="text" name="full_name" id="full_name" class="form-control" value="{{ old('full_name', $record->full_name) }}" required>
                         @error('full_name')
@@ -61,7 +62,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="image">Photo</label>
                         <input type="file" name="image" id="image" class="form-control" accept="image/*">
                         <small class="form-text text-muted">Upload a photo (JPG, PNG, GIF) - Max 2MB</small>
@@ -82,7 +83,7 @@
                     <!-- Hidden field for image_url (kept for backward compatibility) -->
                     <input type="hidden" name="image_url" id="image_url" value="{{ old('image_url', $record->image_url) }}">
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="additional_info">Additional Info</label>
                         <textarea name="additional_info" id="additional_info" class="form-control" rows="3">{{ old('additional_info', $record->additional_info) }}</textarea>
                         @error('additional_info')
@@ -92,13 +93,13 @@
 
                     <!-- Person Parent Information -->
                     <hr>
-                    <h6 class="font-weight-bold text-primary mb-3">Parent Information</h6>
+                    <h6 class="mb-3 font-weight-bold text-primary">Parent Information</h6>
                     
                     @php
                         $personParent = $record->personParent ?? new \App\Models\PersonParent();
                     @endphp
                     
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="father_name">Father's Name</label>
                         <input type="text" name="father_name" id="father_name" class="form-control" value="{{ old('father_name', $personParent->father_name) }}">
                         @error('father_name')
@@ -106,7 +107,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="father_status">Father's Status</label>
                         <select name="father_status" id="father_status" class="form-control">
                             <option value="">Select Status</option>
@@ -118,7 +119,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="mother_name">Mother's Name</label>
                         <input type="text" name="mother_name" id="mother_name" class="form-control" value="{{ old('mother_name', $personParent->mother_name) }}">
                         @error('mother_name')
@@ -126,7 +127,7 @@
                         @enderror
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="mb-3 form-group">
                         <label for="mother_status">Mother's Status</label>
                         <select name="mother_status" id="mother_status" class="form-control">
                             <option value="">Select Status</option>
@@ -141,10 +142,13 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Update Person
                     </button>
-                    <a href="{{ route('people.index') }}" class="btn btn-secondary">
+                    @if(isset($indexRoute))
+                    <a href="{{ $indexRoute }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Cancel
                     </a>
+                    @endif
                 </form>
+                @endif
             </div>
         </div>
     </div>
