@@ -63,6 +63,8 @@ class GuestMessageController extends CrudController
      */
     public function store(Request $request): RedirectResponse|JsonResponse
     {
+        // dd($request->all());
+
         // Check if this is an API request (from the invitation page) or admin panel request
         $isApiRequest = $request->has('invitation_id');
         
@@ -88,7 +90,7 @@ class GuestMessageController extends CrudController
                     'wedding_event_id' => $invitation->wedding_event_id,
                     'guest_name' => $validated['guest_name'],
                     'message' => $validated['message'],
-                    'is_approved' => false, // Default to not approved yet
+                    'is_approved' => true, // Default to not approved yet
                 ]);
 
                 // Return JSON response for API requests

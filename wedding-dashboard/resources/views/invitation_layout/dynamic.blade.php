@@ -479,6 +479,42 @@
       transform: translateY(20px);
       animation: fadeInUp 0.6s forwards;
     }
+
+    /* Kotak pesan */
+    #gift .message-box {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      
+      /* Scroll behavior */
+      max-height: 400px;   /* tinggi maksimal */
+      overflow-y: auto;    /* scroll jika konten lebih */
+    }
+
+    /* Card pesan */
+    #gift .message-card {
+      text-align: left;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    #gift .message-card h4 {
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    #gift .message-card p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.4;
+    }
     @keyframes fadeInUp {
       to {
         opacity: 1;
@@ -730,7 +766,6 @@
 </head>
 
 <body>
-
   <!-- COVER -->
   <section id="cover">
     <div class="text-center content">
@@ -845,7 +880,6 @@
     </div>
   </section>
   @endif
-
   <!-- Reservation -->
   <section id="reservation" class="fade-section">
     <div class="fade-content">
@@ -963,6 +997,7 @@
           <form id="giftForm">
             <div class="mb-3">
               <input type="text" class="form-control" name="nama" id="guestNameInput" placeholder="Nama Anda" value="{{ $guestName ?? '' }}" required readonly>
+              {{-- <input type="text" class="form-control" name='idGuest' value={{$guestId}} hidden> --}}
             </div>
             <div class="mb-3">
               <textarea class="form-control" name="pesan" rows="3" placeholder="Tulis pesan & doa..." required></textarea>
@@ -975,10 +1010,22 @@
       </div>
 
       <!-- List Pesan -->
+      {{-- @dd($guestMessages) --}}
       <div class="mt-4 messages">
         <h5 class="mb-4 text-center">Pesan & Doa</h5>
-        <div id="messageList" class="gap-3 messageList d-flex flex-column">
-          
+        <div id="messageList" class="gap-3 messageList d-flex flex-column message-box">
+          @if($guestMessages && $guestMessages->count() > 0)
+            @foreach($guestMessages->where('is_approved', true)->sortByDesc('created_at') as $guestMessage)
+              <div class="message-card fade-in">
+                <h4>{{ $guestMessage->guest_name }}:</h4>
+                <p>{{ $guestMessage->message }}</p>
+              </div>
+            @endforeach
+          @else
+            <div class="text-center text-muted">
+              <p>Belum ada pesan. Jadilah yang pertama memberikan pesan & doa!</p>
+            </div>
+          @endif
         </div>
       </div>
     </div>
@@ -1059,33 +1106,7 @@
         });
       });
 
-     // Load existing messages when page loads
-      function loadMessages() {
-        fetch('/guest-messages')
-          .then(response => response.json())
-          .then(data => {
-            if(data.success && data.data.length > 0) {
-              // Clear existing messages (except the example ones)
-              messageList.innerHTML = '';
-              
-              // Add each message to the list
-              data.data.forEach(message => {
-                const card = document.createElement("div");
-                card.className = "card border-0 shadow-sm p-3 fade-in";
-                card.innerHTML = `<strong>${message.guest_name}:</strong><p class="mb-0">${message.message}</p>`;
-                messageList.appendChild(card);
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error loading messages:', error);
-          });
-      }
-      
-      // Load messages when page is ready
-      document.addEventListener('DOMContentLoaded', loadMessages);
-
-      // Simpan pesan ke backend
+     // Simpan pesan ke backend
       const form = document.getElementById("giftForm");
       const messageList = document.getElementById("messageList");
 
@@ -1116,12 +1137,23 @@
           })
           .then(response => response.json())
           .then(data => {
+            console.log("llll")
             if(data.success) {
-              // Add the new message to the list
-              const card = document.createElement("div");
-              card.className = "card border-0 shadow-sm p-3 fade-in";
-              card.innerHTML = `<strong>${formData.guest_name}:</strong><p class="mb-0">${formData.message}</p>`;
-              messageList.prepend(card); // tambahkan di atas
+              // Add the new message to the top of the list
+              const newMessageHtml = `
+               <div class="message-card fade-in">
+                <h4>${formData.guest_name}:</h4>
+                <p>{formData.message}</p>
+              </div>
+              `;
+              
+              // If the "no messages" text is displayed, remove it
+              const noMessageElement = messageList.querySelector('.text-center');
+              if (noMessageElement) {
+                messageList.innerHTML = newMessageHtml;
+              } else {
+                messageList.insertAdjacentHTML('afterbegin', newMessageHtml);
+              }
               
               // Reset form
               this.reset();
