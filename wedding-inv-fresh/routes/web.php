@@ -35,12 +35,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::post('invitations/{invitation}/send', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
 Route::get('invitation/{id}', [InvitationController::class, 'showInvitation'])->name('invitation.show');
 Route::post('/api/guest-messages', [GuestMessageController::class, 'store'])->name('api.guest-messages.store');
+Route::get('my-guests/present',[InvitationController::class, 'present'])->name('invitation.present');
+Route::post('my-guests-attendant',[GuestController::class, 'attendant'])->name('my-guests.attendant');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
     // Order creation routes - available to both admins and clients
     Route::get('/create-order/step1', [OrderController::class, 'step1'])->name('create-order.step1');
     Route::post('/create-order/step1', [OrderController::class, 'processStep1'])->name('create-order.process-step1');
@@ -51,8 +52,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/create-order/step4', [OrderController::class, 'step4'])->name('create-order.step4');
     Route::post('/create-order/step4', [OrderController::class, 'processStep4'])->name('create-order.process-step4');
     Route::post('/create-order/cancel', [OrderController::class, 'cancel'])->name('create-order.cancel');
-
-
     Route::get('/api/wedding-events/{wedding_event_id}/guest-messages', [\App\Http\Controllers\GuestMessageController::class, 'indexForWeddingEvent'])->name('api.guest-messages.index');
 
 });

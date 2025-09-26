@@ -307,4 +307,8 @@ class InvitationController extends CrudController
             'guestMessages'=>$invitation->weddingEvent->guestMessages,
         ]);
     }
+    public function present(){
+        // dd("opopop");
+        return view('invitation_layout.attendant');
+    }
 }
