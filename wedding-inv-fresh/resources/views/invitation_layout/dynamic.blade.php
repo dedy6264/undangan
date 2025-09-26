@@ -888,7 +888,7 @@
     <div class="invitation-card">
     <!-- Bagian kiri: Barcode -->
       <div class="card-left">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ route('invitation.show', ['id' => $invitation->id]) }}" 
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $invitation->invitation_code }}" 
             alt="Reservation Barcode" />
         <p class="code">Kode: {{ $invitation->invitation_code }}</p>
       </div>

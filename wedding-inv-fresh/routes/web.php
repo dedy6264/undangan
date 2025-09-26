@@ -108,6 +108,8 @@ Route::middleware(['auth', 'client'])->group(function () {
     Route::resource('my-timeline-events', TimelineEventController::class);
     Route::resource('my-bank-accounts', BankAccountController::class);
     Route::resource('my-guests', GuestController::class);
+    Route::get('my-guests/present',[InvitationController::class, 'present'])->name('invitation.present');
+    Route::post('my-guests-attendant',[GuestController::class, 'attendant'])->name('my-guests.attendant');
     Route::resource('my-invitations', InvitationController::class);
     Route::resource('my-guest-messages', GuestMessageController::class);
     Route::resource('my-transactions', TransactionController::class);

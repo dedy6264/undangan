@@ -6,6 +6,7 @@ use App\Models\Invitation;
 use App\Models\Guest;
 use App\Models\WeddingEvent;
 use App\Models\QrCode;
+use App\Models\GuestAttendant;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -71,12 +72,16 @@ class InvitationController extends CrudController
             'is_attending' => 'nullable|boolean',
             'responded_at' => 'nullable|date',
         ]);
-
+        $request->merge([
+            'invitation_code' => "INVTW" . (string)$request->guest_id . (string)$request->wedding_event_id
+        ]);
         // Create the invitation
+        // dd($request->all());
         $invitation = Invitation::create($request->all());
 
         // Generate QR code data (using invitation code as the data)
-        $qrData = route($this->getRoutePrefix().'.show', $invitation->id);
+        // $qrData = route($this->getRoutePrefix().'.show', $invitation->id);
+        $qrData = $request->invitation_code;
         
         // Generate QR code image in SVG format (doesn't require imagick)
         $qrImage = QrCodeGenerator::format('svg')->size(300)->generate($qrData);
@@ -308,7 +313,34 @@ class InvitationController extends CrudController
         ]);
     }
     public function present(){
-        // dd("opopop");
-        return view('invitation_layout.attendant');
+        // Get the authenticated user
+        $user = Auth::user();
+        
+        // Get the couple associated with this user
+        $couple = null;
+        if ($user->role === 'client' && $user->client_id) {
+            $couple = \App\Models\Couple::where('client_id', $user->client_id)->first();
+        } elseif ($user->role === 'admin') {
+            // For admin, we might want to show all present guests or filter by a specific wedding event
+            // For now, I'll implement the basic functionality
+            $couple = null; // Admin will see all present guests
+        }
+        
+        // Get guest attendants based on couple (for client) or all (for admin)
+        $presentGuests = GuestAttendant::with(['guest', 'weddingEvent'])
+            ->when($couple, function($query, $couple) {
+                // If a couple is specified (for client users), only show attendants for their events
+                return $query->whereHas('weddingEvent', function($subQuery) use($couple) {
+                    $subQuery->whereHas('couple', function($q) use($couple) {
+                        $q->where('id', $couple->id);
+                    });
+                });
+            })
+            ->orderBy('checked_in_at', 'desc')
+            ->paginate(10);
+
+        return view('invitation_layout.attendant', [
+            'presentGuests' => $presentGuests
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Guest;
 use App\Models\Couple;
+use App\Models\GuestAttendant;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -160,5 +161,106 @@ class GuestController extends CrudController
 
         return redirect()->route($this->getRoutePrefix().'.index')
             ->with('success', 'Guest deleted successfully.');
+    }
+    
+    /**
+     * Handle guest attendance status
+     */
+    public function attendant(Request $request)
+    {
+        $guest = null;
+        $weddingEvent = null;
+        $invitation = null;
+        
+        // Try to find guest by invitation_code (more common in QR codes), code (invitation ID), or guest_id
+        if ($request->has('invitation_code')) {
+            // Find the invitation by its invitation_code (the string code in the invitation)
+            $invitation = \App\Models\Invitation::where('invitation_code', $request->invitation_code)->first();
+            if (!$invitation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid invitation code.'
+                ], 404);
+            }
+            $guest = $invitation->guest;
+            $weddingEvent = $invitation->weddingEvent;
+        } elseif ($request->has('code')) {
+            // Find the invitation by its ID (embedded in QR code as an ID)
+            $invitation = \App\Models\Invitation::find($request->code);
+            if (!$invitation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid invitation code.'
+                ], 404);
+            }
+            $guest = $invitation->guest;
+            $weddingEvent = $invitation->weddingEvent;
+        } elseif ($request->has('guest_id')) {
+            // Find the guest by ID
+            $guest = Guest::findOrFail($request->guest_id);
+            
+            // Find the invitation for this guest to get the wedding event
+            $invitation = \App\Models\Invitation::where('guest_id', $guest->id)->first();
+            
+            if (!$invitation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No invitation found for this guest.'
+                ], 404);
+            }
+            $weddingEvent = $invitation->weddingEvent;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Either guest_id, invitation_code, or code must be provided.'
+            ], 400);
+        }
+        
+        // Check if the guest is already recorded as attended to avoid duplicates
+        $existingAttendance = GuestAttendant::where('guest_id', $guest->id)
+            ->where('wedding_event_id', $weddingEvent->id)
+            ->first();
+            
+        if ($existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Guest has already been marked as attended.',
+                'name' => $guest->name,
+                'status' => 'already_present',
+                'data' => [
+                    'guest_id' => $guest->id,
+                    'guest_name' => $guest->name,
+                    'checked_in_at' => $existingAttendance->checked_in_at
+                ]
+            ]);
+        }
+        
+        // Insert record into guest_attendant table
+        $guestAttendant = GuestAttendant::create([
+            'guest_id' => $guest->id,
+            'wedding_event_id' => $weddingEvent->id,
+            'guest_name' => $guest->name,
+        ]);
+        
+        // Also update the attendance status in the invitation
+        if (isset($invitation)) {
+            $invitation->update([
+                'is_attending' => true,
+                'responded_at' => now()
+            ]);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Guest attendance recorded successfully.',
+            'name' => $guest->name,
+            'status' => 'present',
+            'data' => [
+                'guest_id' => $guest->id,
+                'guest_name' => $guest->name,
+                'checked_in_at' => $guestAttendant->checked_in_at,
+                'wedding_event_id' => $weddingEvent->id
+            ]
+        ]);
     }
 }
