@@ -1143,7 +1143,7 @@
               const newMessageHtml = `
                <div class="message-card fade-in">
                 <h4>${formData.guest_name}:</h4>
-                <p>{formData.message}</p>
+                <p>${formData.message}</p>
               </div>
               `;
               
